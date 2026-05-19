@@ -95,14 +95,13 @@
       left: 0;
       width: 100%;
       height: 50%;
-      background: #0F0E0E;
       overflow: hidden;
     }
 
     /* top half sits at top of card */
     .card-top  { top: 0; }
     /* bottom half sits at bottom of card */
-    .card-bottom { bottom: 0; border-top: 2px solid #000; }
+    .card-bottom { bottom: 0; }
 
     /* The digit wrapper: full --fs height, centred in the full card.
        Relative to each half, it's offset so the correct half shows. */
@@ -141,7 +140,6 @@
       font-family: 'Oswald', sans-serif;
       font-size:   var(--fs, 160px);
       font-weight: 700;
-      color: #d0d0cb;
       line-height: 1;
       letter-spacing: -0.02em;
       white-space: nowrap;
@@ -153,10 +151,41 @@
       left: 0; right: 0;
       top: calc(50% - 3px);
       height: 6px;
-      background: #000;
       z-index: 20;
       pointer-events: none;
     }
+
+    /* ── Theme variables ────────────────────────────────── */
+    :root {
+      --bg:         #000;
+      --card-bg:    #0F0E0E;
+      --hinge-col:  #000;
+      --digit-col:  #d0d0cb;
+      --badge-col:  rgba(208,208,203,0.78);
+      --meta-col:   rgba(208,208,203,0.28);
+      --footer-col: rgba(208,208,203,0.22);
+    }
+    body.light-mode {
+      --bg:         #e8e6e0;
+      --card-bg:    #f5f4f0;
+      --hinge-col:  #ccc9c0;
+      --digit-col:  #1a1a18;
+      --badge-col:  rgba(30,30,26,0.80);
+      --meta-col:   #000000;
+      --footer-col: rgba(30,30,26,0.55);
+    }
+
+    html, body { background: var(--bg); transition: background .35s; }
+    .card-top, .card-bottom, .flap-top, .flap-bottom {
+      background: var(--card-bg);
+      transition: background .35s;
+    }
+    .card-bottom { border-top: 2px solid var(--hinge-col); }
+    .hinge { background: var(--hinge-col); transition: background .35s; }
+    .digit-wrap span { color: var(--digit-col); transition: color .35s; }
+    .ampm-badge { color: var(--badge-col); transition: color .35s; }
+    .meta { color: var(--meta-col); transition: color .35s; }
+    .footer-left, .footer-right, .footer-right a { color: var(--footer-col); transition: color .35s; }
 
     /* AM/PM */
     .ampm-badge {
@@ -168,10 +197,15 @@
       font-size: var(--ampm-fs, 13px);
       font-weight: 700;
       letter-spacing: 0.06em;
-      color: rgba(208,208,203,0.78);
+      color: var(--badge-col);
       line-height: 1;
-      pointer-events: none;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: opacity .15s;
     }
+    .ampm-badge:hover { opacity: 0.6; }
+
+
 
     /* ── Flaps ──────────────────────────────────────────── */
     .flap-top {
@@ -235,7 +269,7 @@
       font-size: var(--meta-fs, 10px);
       font-weight: 400;
       letter-spacing: 0.07em;
-      color: rgba(208,208,203,0.28);
+      color: var(--meta-col);
       line-height: 1;
     }
     .meta-sep { opacity: 0.4; }
@@ -244,7 +278,7 @@
       text-decoration: none;
       transition: color .2s;
     }
-    .meta a:hover { color: rgba(208,208,203,0.7); }
+    .meta a:hover { color: var(--badge-col); }
 
     /* ── Footer ─────────────────────────────────────────── */
     .site-footer {
@@ -642,6 +676,13 @@
   document.addEventListener('fullscreenchange',       updateFsIcon);
   document.addEventListener('webkitfullscreenchange', updateFsIcon);
   document.addEventListener('mozfullscreenchange',    updateFsIcon);
+
+  /* ── theme toggle (click AM/PM badge) ──────────────── */
+  let isLight = false;
+  document.getElementById('ampm-badge').addEventListener('click', () => {
+    isLight = !isLight;
+    document.body.classList.toggle('light-mode', isLight);
+  });
 
   /* ── geolocation ────────────────────────────────────── */
   function setLoc(t){ document.getElementById('loc-span').textContent = t; }
