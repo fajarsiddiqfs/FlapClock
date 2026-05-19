@@ -555,13 +555,105 @@
     document.getElementById('page').style.gap = Math.round(vh * 0.038) + 'px';
   }
 
+  /* ── numeral systems ─────────────────────────────────── */
+  const LANGUAGES = [
+    { name: 'English',          digits: ['0','1','2','3','4','5','6','7','8','9'] },
+    { name: '中文',              digits: ['〇','一','二','三','四','五','六','七','八','九'] },
+    { name: 'हिन्दी',            digits: ['०','१','२','३','४','५','६','७','८','९'] },
+    { name: 'Español',          digits: ['0','1','2','3','4','5','6','7','8','9'] },
+    { name: 'Français',         digits: ['0','1','2','3','4','5','6','7','8','9'] },
+    { name: 'عربي',             digits: ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'] },
+    { name: 'বাংলা',            digits: ['০','১','২','৩','৪','৫','৬','৭','৮','৯'] },
+    { name: 'Português',        digits: ['0','1','2','3','4','5','6','7','8','9'] },
+    { name: 'Русский',          digits: ['0','1','2','3','4','5','6','7','8','9'] },
+    { name: 'اردو',             digits: ['۰','۱','۲','۳','۴','۵','۶','۷','۸','۹'] },
+  ];
+
+  // Languages with unique numeral glyphs (non-Latin) need a smaller font for legibility
+  const LANG_FONT = [
+    null,                // English   – Oswald fine
+    '"Noto Serif SC", "Noto Sans SC", serif',   // 中文
+    '"Noto Sans Devanagari", sans-serif',        // Hindi
+    null, null,          // Español, Français
+    '"Noto Sans Arabic", sans-serif',            // Arabic
+    '"Noto Sans Bengali", sans-serif',           // Bengali
+    null, null,          // Português, Русский
+    '"Noto Nastaliq Urdu", "Noto Sans Arabic", sans-serif', // Urdu
+  ];
+
+  let langIdx = 0;
+
+  function toLocalDigits(str) {
+    const d = LANGUAGES[langIdx].digits;
+    return str.replace(/[0-9]/g, n => d[+n]);
+  }
+
+  function applyLangFont() {
+    const ff = LANG_FONT[langIdx];
+    document.querySelectorAll('.digit-wrap span').forEach(el => {
+      el.style.fontFamily = ff || '';
+    });
+  }
+
+  function cycleLang() {
+    langIdx = (langIdx + 1) % LANGUAGES.length;
+    applyLangFont();
+    // Force immediate re-render of current time in new numerals
+    const c = cards.h;
+    const cm = cards.m;
+    // Wipe cur so flipCard will re-render
+    c.cur  = '';
+    cm.cur = '';
+    tick();
+
+    // Show brief language name toast
+    showLangToast(LANGUAGES[langIdx].name);
+  }
+
+  function showLangToast(name) {
+    const old = document.getElementById('lang-toast');
+    if (old) old.remove();
+    const t = document.createElement('div');
+    t.id = 'lang-toast';
+    t.textContent = name;
+    t.style.cssText = [
+      'position:fixed','top:18px','left:50%','transform:translateX(-50%)',
+      'background:rgba(20,20,20,0.85)','color:rgba(255,255,255,0.92)',
+      'font-family:Inter,sans-serif','font-size:14px','font-weight:600',
+      'padding:7px 18px','border-radius:20px','z-index:9999',
+      'pointer-events:none','opacity:1','transition:opacity 0.4s ease',
+      'white-space:nowrap'
+    ].join(';');
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; }, 1400);
+    setTimeout(() => { if (t.parentNode) t.remove(); }, 1900);
+  }
+
+  // Make both cards clickable to cycle language — works on iOS/iPad/desktop
+  let lastLangTap = 0;
+  function onCardTap(e) {
+    if (e.target.closest('#ampm-badge')) return;
+    const now = Date.now();
+    if (now - lastLangTap < 600) return;
+    lastLangTap = now;
+    cycleLang();
+  }
+  ['hcard','mcard'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('touchstart', onCardTap, { passive: true });
+    el.addEventListener('click',      onCardTap);
+  });
+
+  // Cursor pointer on cards
+  document.querySelectorAll('.flip-card').forEach(el => { el.style.cursor = 'pointer'; });
+
   /* ── tick ───────────────────────────────────────────── */
   function tick() {
     const now   = new Date();
     const hrs24 = now.getHours();
     const isPM  = hrs24 >= 12;
-    const hrs12 = String(hrs24 % 12 || 12);
-    const mins  = pad(now.getMinutes());
+    const hrs12 = toLocalDigits(String(hrs24 % 12 || 12));
+    const mins  = toLocalDigits(pad(now.getMinutes()));
 
     flipCard(cards.h, hrs12);
     flipCard(cards.m, mins);
