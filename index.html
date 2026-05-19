@@ -553,9 +553,8 @@
   const fsExpand   = document.getElementById('fs-expand');
   const fsCompress = document.getElementById('fs-compress');
 
-  // Detect iOS (iPhone/iPad) — includes iOS Chrome which uses WebKit
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Detect iPhone only — iPad and desktop use native Fullscreen API
+  const isIPhone = /iPhone/.test(navigator.userAgent);
 
   function isInFullscreen() {
     return !!(document.fullscreenElement   ||
@@ -600,7 +599,7 @@
   }
 
   fsBtn.addEventListener('click', () => {
-    if (isIOS) {
+    if (isIPhone) {
       iosFullscreenSimulate();
       return;
     }
