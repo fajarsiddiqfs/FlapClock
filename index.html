@@ -565,6 +565,250 @@
     body.light-mode .modal-footer a:hover { color: rgba(0,0,0,0.85); }
     .modal-footer-sep { opacity: 0.4; }
 
+
+    /* ── Tabs ────────────────────────────────────────────── */
+    .modal-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 4px;
+    }
+    body.light-mode .modal-tabs { background: rgba(0,0,0,0.06); }
+    .modal-tab {
+      flex: 1;
+      padding: 7px 4px;
+      border-radius: 9px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      white-space: nowrap;
+    }
+    body.light-mode .modal-tab { color: rgba(0,0,0,0.4); }
+    .modal-tab.active {
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+    }
+    body.light-mode .modal-tab.active {
+      background: rgba(0,0,0,0.10);
+      color: #111;
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Calendar ────────────────────────────────────────── */
+    .cal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .cal-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    body.light-mode .cal-title { color: #111; }
+    .cal-nav {
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.07);
+      cursor: pointer;
+      border: none;
+      transition: background .15s;
+    }
+    .cal-nav:hover { background: rgba(255,255,255,0.14); }
+    body.light-mode .cal-nav { background: rgba(0,0,0,0.07); }
+    body.light-mode .cal-nav:hover { background: rgba(0,0,0,0.13); }
+    .cal-nav svg { width: 14px; height: 14px; color: rgba(255,255,255,0.7); }
+    body.light-mode .cal-nav svg { color: rgba(0,0,0,0.6); }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      text-align: center;
+    }
+    .cal-dow {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.28);
+      padding-bottom: 6px;
+      text-transform: uppercase;
+    }
+    body.light-mode .cal-dow { color: rgba(0,0,0,0.32); }
+    .cal-day {
+      font-size: 11px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.65);
+      padding: 5px 2px;
+      border-radius: 6px;
+      cursor: default;
+      transition: background .12s;
+      font-family: "Inter", sans-serif;
+    }
+    body.light-mode .cal-day { color: rgba(0,0,0,0.65); }
+    .cal-day.empty { color: transparent; }
+    .cal-day.today {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-weight: 700;
+      border-radius: 50%;
+    }
+    body.light-mode .cal-day.today {
+      background: #111;
+      color: #fff;
+    }
+    .cal-day.other-month { color: rgba(255,255,255,0.18); }
+    body.light-mode .cal-day.other-month { color: rgba(0,0,0,0.2); }
+
+    /* ── Alarm ───────────────────────────────────────────── */
+    .alarm-time-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .alarm-input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+    .alarm-input:focus { outline: none; border-color: rgba(255,255,255,0.25); }
+    body.light-mode .alarm-input {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.12);
+      color: #111;
+    }
+    .alarm-set-btn {
+      padding: 10px 16px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .alarm-set-btn:hover { background: rgba(255,255,255,0.20); }
+    body.light-mode .alarm-set-btn { background: rgba(0,0,0,0.10); color: #111; }
+    body.light-mode .alarm-set-btn:hover { background: rgba(0,0,0,0.18); }
+    .alarm-status {
+      font-size: 11px;
+      font-family: "Inter", sans-serif;
+      font-weight: 600;
+      color: rgba(255,255,255,0.35);
+      min-height: 16px;
+      letter-spacing: 0.02em;
+    }
+    body.light-mode .alarm-status { color: rgba(0,0,0,0.38); }
+    .alarm-status.on { color: #4ade80; }
+    .alarm-status.ring { color: #fb923c; }
+
+    /* ── Countdown ───────────────────────────────────────── */
+    .countdown-inputs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      align-items: center;
+    }
+    .cd-unit {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .cd-input {
+      width: 100%;
+      padding: 10px 4px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .cd-input:focus { outline: none; border-color: rgba(255,255,255,0.25); }
+    body.light-mode .cd-input {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.12);
+      color: #111;
+    }
+    .cd-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      font-family: "Inter", sans-serif;
+    }
+    body.light-mode .cd-label { color: rgba(0,0,0,0.35); }
+    .cd-colon {
+      font-size: 20px;
+      font-weight: 700;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 14px;
+    }
+    body.light-mode .cd-colon { color: rgba(0,0,0,0.25); }
+    .cd-display {
+      text-align: center;
+      font-family: "Oswald", sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      margin-bottom: 12px;
+      min-height: 46px;
+    }
+    body.light-mode .cd-display { color: #111; }
+    .cd-display.done { color: #fb923c; }
+    .cd-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .cd-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 12px;
+      border: none;
+      font-family: "Inter", sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .cd-btn.start { background: rgba(255,255,255,0.13); color: #fff; }
+    .cd-btn.start:hover { background: rgba(255,255,255,0.22); }
+    .cd-btn.reset { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
+    .cd-btn.reset:hover { background: rgba(255,255,255,0.12); }
+    body.light-mode .cd-btn.start { background: rgba(0,0,0,0.12); color: #111; }
+    body.light-mode .cd-btn.start:hover { background: rgba(0,0,0,0.20); }
+    body.light-mode .cd-btn.reset { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.45); }
+    body.light-mode .cd-btn.reset:hover { background: rgba(0,0,0,0.12); }
+
   </style>
 </head>
 <body>
@@ -616,6 +860,9 @@
     <span class="meta meta-sep"> · </span>
     <svg class="meta-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
     <span class="meta" id="loc-span">Locating…</span>
+    <span class="meta meta-sep" id="weather-sep" style="display:none"> · </span>
+    <svg class="meta-icon" id="weather-icon-el" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM4 10.5H1v2h3zm9-9.95h-2V3.5h2zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5v2h3v-2zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg>
+    <span class="meta" id="weather-span" style="display:none"></span>
   </div>
 
 </div>
@@ -640,31 +887,86 @@
       </div>
     </div>
 
-    <!-- Timezone -->
-    <div class="setting-section">
-      <div class="setting-label">Timezone</div>
-      <select class="tz-select" id="tz-select"></select>
+    <!-- Tabs -->
+    <div class="modal-tabs">
+      <button class="modal-tab active" data-tab="general">General</button>
+      <button class="modal-tab" data-tab="calendar">Calendar</button>
+      <button class="modal-tab" data-tab="alarm">Alarm</button>
+      <button class="modal-tab" data-tab="countdown">Timer</button>
     </div>
 
-    <div class="modal-divider"></div>
+    <!-- ── TAB: General ── -->
+    <div class="tab-panel active" id="tab-general">
+      <div class="setting-section">
+        <div class="setting-label">Timezone</div>
+        <select class="tz-select" id="tz-select"></select>
+      </div>
+      <div class="modal-divider"></div>
+      <div class="setting-section">
+        <div class="setting-label">Embed This Clock</div>
+        <div class="embed-box">
+          <textarea class="embed-code" id="embed-code" readonly><iframe src="https://flapclock.com/" width="100%" height="260" frameborder="0" style="border-radius:16px;overflow:hidden;" allow="geolocation"></iframe></textarea>
+          <button class="copy-btn" id="copy-btn" title="Copy code">
+            <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            <svg id="check-icon" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="copy-feedback" id="copy-feedback">Copied to clipboard!</div>
+      </div>
+    </div>
 
-    <!-- Embed -->
-    <div class="setting-section">
-      <div class="setting-label">Embed This Clock</div>
-      <div class="embed-box">
-        <textarea class="embed-code" id="embed-code" readonly><iframe src="https://flapclock.com/" width="100%" height="260" frameborder="0" style="border-radius:16px;overflow:hidden;" allow="geolocation"></iframe></textarea>
-        <button class="copy-btn" id="copy-btn" title="Copy code">
-          <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-          </svg>
-          <svg id="check-icon" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
+    <!-- ── TAB: Calendar ── -->
+    <div class="tab-panel" id="tab-calendar">
+      <div class="cal-header">
+        <button class="cal-nav" id="cal-prev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="cal-title" id="cal-title"></span>
+        <button class="cal-nav" id="cal-next">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
-      <div class="copy-feedback" id="copy-feedback">Copied to clipboard!</div>
+      <div class="cal-grid" id="cal-grid"></div>
     </div>
 
+    <!-- ── TAB: Alarm ── -->
+    <div class="tab-panel" id="tab-alarm">
+      <div class="setting-label" style="margin-bottom:12px">Set Alarm Time</div>
+      <div class="alarm-time-row">
+        <input class="alarm-input" type="time" id="alarm-input" value="07:00">
+        <button class="alarm-set-btn" id="alarm-toggle">Set Alarm</button>
+      </div>
+      <div class="alarm-status" id="alarm-status">No alarm set</div>
+    </div>
+
+    <!-- ── TAB: Countdown ── -->
+    <div class="tab-panel" id="tab-countdown">
+      <div class="countdown-inputs" id="cd-inputs">
+        <div class="cd-unit">
+          <input class="cd-input" type="number" id="cd-h" min="0" max="23" value="0" placeholder="00">
+          <span class="cd-label">HH</span>
+        </div>
+        <div class="cd-colon">:</div>
+        <div class="cd-unit">
+          <input class="cd-input" type="number" id="cd-m" min="0" max="59" value="5" placeholder="00">
+          <span class="cd-label">MM</span>
+        </div>
+        <div class="cd-colon">:</div>
+        <div class="cd-unit">
+          <input class="cd-input" type="number" id="cd-s" min="0" max="59" value="0" placeholder="00">
+          <span class="cd-label">SS</span>
+        </div>
+      </div>
+      <div class="cd-display" id="cd-display">00:05:00</div>
+      <div class="cd-btns">
+        <button class="cd-btn start" id="cd-start">Start</button>
+        <button class="cd-btn reset" id="cd-reset">Reset</button>
+      </div>
+    </div>
 
     <div class="modal-footer">
       Powered by <a href="https://euphorya.co" target="_blank" rel="noopener">Euphorya</a>
@@ -972,7 +1274,7 @@
   setCard(cards.h, '12');
   setCard(cards.m, '00');
   tick();
-  setInterval(tick, 1000);
+  setInterval(() => { tick(); checkAlarm(); }, 1000);
 
   let rt;
   window.addEventListener('resize', () => {
@@ -1066,7 +1368,7 @@
   }
   if ('geolocation' in navigator) {
     navigator.geolocation.getCurrentPosition(
-      p  => reverseGeocode(p.coords.latitude, p.coords.longitude),
+      p  => { reverseGeocode(p.coords.latitude, p.coords.longitude); fetchWeather(p.coords.latitude, p.coords.longitude); },
       () => setLoc('Location Unavailable'),
       { timeout: 8000 }
     );
@@ -1151,6 +1453,275 @@
       copyFeedback.textContent = 'Copied!';
       copyFeedback.classList.add('show');
       setTimeout(() => copyFeedback.classList.remove('show'), 2000);
+    });
+  });
+
+
+  /* ══════════════════════════════════════════════════════
+     WEATHER
+  ══════════════════════════════════════════════════════ */
+  function fetchWeather(lat, lon) {
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=celsius`)
+      .then(r => r.json())
+      .then(d => {
+        const w = d.current_weather;
+        if (!w) return;
+        const temp = Math.round(w.temperature);
+        const code = w.weathercode;
+        const icon = weatherIcon(code);
+        const desc = weatherDesc(code);
+        document.getElementById('weather-sep').style.display = '';
+        const iconEl = document.getElementById('weather-icon-el');
+        iconEl.style.display = '';
+        iconEl.innerHTML = icon;
+        const span = document.getElementById('weather-span');
+        span.style.display = '';
+        span.textContent = `${temp}°C  ${desc}`;
+      })
+      .catch(() => {});
+  }
+
+  function weatherDesc(code) {
+    if (code === 0) return 'Clear';
+    if (code <= 2) return 'Partly Cloudy';
+    if (code === 3) return 'Overcast';
+    if (code <= 49) return 'Foggy';
+    if (code <= 59) return 'Drizzle';
+    if (code <= 69) return 'Rain';
+    if (code <= 79) return 'Snow';
+    if (code <= 82) return 'Showers';
+    if (code <= 86) return 'Snow Showers';
+    if (code <= 99) return 'Thunderstorm';
+    return '';
+  }
+
+  function weatherIcon(code) {
+    // Sun
+    if (code === 0) return '<path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.66 5.34l1.41-1.41M12 7a5 5 0 1 0 0 10A5 5 0 0 0 12 7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    // Partly cloudy
+    if (code <= 2) return '<path d="M12 3a6 6 0 0 1 6 6 6 6 0 0 1-.1 1H18a4 4 0 0 1 0 8H7a5 5 0 0 1-1-9.9A6 6 0 0 1 12 3z" fill="currentColor" opacity=".6"/><path d="M17 8A5 5 0 1 0 7.1 8" fill="none" stroke="currentColor" stroke-width="1.5"/>';
+    // Overcast / fog
+    if (code <= 49) return '<path d="M3 15h18M3 12h18M3 9h18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".5"/><path d="M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    // Rain / drizzle / showers
+    if (code <= 82) return '<path d="M20 16.2A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><line x1="8" y1="19" x2="8" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="16" y1="19" x2="16" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+    // Snow
+    if (code <= 86) return '<path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="m8 16 1 1-1 1M12 15v4M16 16l-1 1 1 1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>';
+    // Thunderstorm
+    return '<path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><polyline points="13 11 9 17 15 17 11 23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+
+  /* ══════════════════════════════════════════════════════
+     MODAL TABS
+  ══════════════════════════════════════════════════════ */
+  document.querySelectorAll('.modal-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'calendar') renderCalendar();
+    });
+  });
+
+  /* ══════════════════════════════════════════════════════
+     CALENDAR
+  ══════════════════════════════════════════════════════ */
+  const CAL_MONTHS = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+  const CAL_DAYS   = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let calYear, calMonth;
+
+  function renderCalendar() {
+    const today = new Date();
+    if (calYear === undefined) { calYear = today.getFullYear(); calMonth = today.getMonth(); }
+    document.getElementById('cal-title').textContent = `${CAL_MONTHS[calMonth]} ${calYear}`;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+    CAL_DAYS.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-dow';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day empty';
+      el.textContent = '';
+      grid.appendChild(el);
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day';
+      el.textContent = d;
+      if (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()) {
+        el.classList.add('today');
+      }
+      grid.appendChild(el);
+    }
+  }
+
+  document.getElementById('cal-prev').addEventListener('click', () => {
+    calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+    renderCalendar();
+  });
+  document.getElementById('cal-next').addEventListener('click', () => {
+    calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderCalendar();
+  });
+
+  /* ══════════════════════════════════════════════════════
+     ALARM
+  ══════════════════════════════════════════════════════ */
+  let alarmTime    = null;
+  let alarmOn      = false;
+  let alarmRinging = false;
+  let alarmBeepInt = null;
+
+  function playBeep(freq, dur) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq || 880;
+      gain.gain.setValueAtTime(0.4, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + (dur || 0.4));
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + (dur || 0.4));
+      osc.onended = () => ctx.close();
+    } catch(e) {}
+  }
+
+  function stopAlarm() {
+    clearInterval(alarmBeepInt);
+    alarmBeepInt = null;
+    alarmRinging = false;
+    alarmOn = false;
+    alarmTime = null;
+    document.getElementById('alarm-toggle').textContent = 'Set Alarm';
+    updateAlarmStatus();
+  }
+
+  function updateAlarmStatus() {
+    const el = document.getElementById('alarm-status');
+    if (alarmRinging) {
+      el.className = 'alarm-status ring';
+      el.textContent = '🔔 Alarm ringing! Tap "Stop" to dismiss.';
+      document.getElementById('alarm-toggle').textContent = 'Stop';
+    } else if (alarmOn && alarmTime) {
+      el.className = 'alarm-status on';
+      el.textContent = `⏰ Alarm set for ${alarmTime}`;
+      document.getElementById('alarm-toggle').textContent = 'Cancel';
+    } else {
+      el.className = 'alarm-status';
+      el.textContent = 'No alarm set';
+      document.getElementById('alarm-toggle').textContent = 'Set Alarm';
+    }
+  }
+
+  document.getElementById('alarm-toggle').addEventListener('click', () => {
+    if (alarmRinging) { stopAlarm(); return; }
+    if (alarmOn) { stopAlarm(); return; }
+    const val = document.getElementById('alarm-input').value;
+    if (!val) return;
+    alarmTime = val;
+    alarmOn = true;
+    updateAlarmStatus();
+  });
+
+  // Check alarm every second (hooked into existing tick interval below)
+  function checkAlarm() {
+    if (!alarmOn || alarmRinging) return;
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    if (`${hh}:${mm}` === alarmTime && now.getSeconds() < 3) {
+      alarmRinging = true;
+      updateAlarmStatus();
+      alarmBeepInt = setInterval(() => { playBeep(880, 0.35); }, 600);
+      setTimeout(() => { if (alarmRinging) stopAlarm(); }, 60000);
+    }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     COUNTDOWN TIMER
+  ══════════════════════════════════════════════════════ */
+  let cdTotal    = 0;
+  let cdRemain   = 0;
+  let cdRunning  = false;
+  let cdInterval = null;
+
+  function cdFormat(secs) {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return [h,m,s].map(v => String(v).padStart(2,'0')).join(':');
+  }
+
+  function cdUpdateDisplay() {
+    const el = document.getElementById('cd-display');
+    el.textContent = cdFormat(cdRemain);
+    el.classList.toggle('done', cdRemain === 0 && cdTotal > 0 && !cdRunning);
+  }
+
+  function cdStop() {
+    clearInterval(cdInterval);
+    cdInterval = null;
+    cdRunning = false;
+    document.getElementById('cd-start').textContent = cdRemain > 0 ? 'Resume' : 'Start';
+  }
+
+  document.getElementById('cd-start').addEventListener('click', () => {
+    if (cdRunning) { cdStop(); return; }
+    if (cdRemain === 0) {
+      const h = parseInt(document.getElementById('cd-h').value) || 0;
+      const m = parseInt(document.getElementById('cd-m').value) || 0;
+      const s = parseInt(document.getElementById('cd-s').value) || 0;
+      cdTotal = h * 3600 + m * 60 + s;
+      cdRemain = cdTotal;
+      if (cdRemain === 0) return;
+    }
+    cdRunning = true;
+    document.getElementById('cd-start').textContent = 'Pause';
+    document.getElementById('cd-inputs').style.opacity = '0.4';
+    cdInterval = setInterval(() => {
+      cdRemain--;
+      cdUpdateDisplay();
+      if (cdRemain <= 0) {
+        cdStop();
+        document.getElementById('cd-inputs').style.opacity = '1';
+        // Beep 3 times
+        playBeep(660, 0.3);
+        setTimeout(() => playBeep(660, 0.3), 400);
+        setTimeout(() => playBeep(880, 0.5), 800);
+      }
+    }, 1000);
+    cdUpdateDisplay();
+  });
+
+  document.getElementById('cd-reset').addEventListener('click', () => {
+    cdStop();
+    cdRemain = 0;
+    cdTotal  = 0;
+    document.getElementById('cd-inputs').style.opacity = '1';
+    document.getElementById('cd-start').textContent = 'Start';
+    cdUpdateDisplay();
+  });
+
+  // Sync display when inputs change
+  ['cd-h','cd-m','cd-s'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      if (!cdRunning && cdRemain === 0) {
+        const h = parseInt(document.getElementById('cd-h').value) || 0;
+        const m = parseInt(document.getElementById('cd-m').value) || 0;
+        const s = parseInt(document.getElementById('cd-s').value) || 0;
+        document.getElementById('cd-display').textContent = cdFormat(h*3600 + m*60 + s);
+        document.getElementById('cd-display').classList.remove('done');
+      }
     });
   });
 
