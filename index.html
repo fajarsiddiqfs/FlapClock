@@ -829,6 +829,257 @@
     }
     .copy-feedback.show { opacity: 1; }
 
+    /* ── Embed Tab ───────────────────────────────────────── */
+    .embed-presets {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .embed-preset-btn {
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.55);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .embed-preset-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.85);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .embed-preset-btn.active {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      border-color: rgba(255,255,255,0.35);
+    }
+    body.light-mode .embed-preset-btn {
+      border-color: rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.04);
+      color: rgba(0,0,0,0.45);
+    }
+    body.light-mode .embed-preset-btn:hover {
+      background: rgba(0,0,0,0.08);
+      color: rgba(0,0,0,0.75);
+    }
+    body.light-mode .embed-preset-btn.active {
+      background: rgba(0,0,0,0.12);
+      color: rgba(0,0,0,0.88);
+      border-color: rgba(0,0,0,0.28);
+    }
+    .embed-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+    body.light-mode .embed-controls {
+      border-color: rgba(0,0,0,0.08);
+    }
+    .embed-ctrl-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    body.light-mode .embed-ctrl-row {
+      border-bottom-color: rgba(0,0,0,0.06);
+    }
+    .embed-ctrl-row:last-child { border-bottom: none; }
+    .embed-ctrl-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.70);
+    }
+    body.light-mode .embed-ctrl-label { color: rgba(0,0,0,0.62); }
+
+    /* Segmented control */
+    .embed-seg {
+      display: flex;
+      background: rgba(255,255,255,0.06);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+    body.light-mode .embed-seg { background: rgba(0,0,0,0.06); }
+    .embed-seg-btn {
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.45);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .embed-seg-btn.active {
+      background: rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.95);
+    }
+    body.light-mode .embed-seg-btn { color: rgba(0,0,0,0.40); }
+    body.light-mode .embed-seg-btn.active {
+      background: rgba(0,0,0,0.12);
+      color: rgba(0,0,0,0.85);
+    }
+
+    /* Apple-style toggle */
+    .embed-toggle {
+      width: 40px;
+      height: 24px;
+      border-radius: 12px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      cursor: pointer;
+      position: relative;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .embed-toggle span {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.45);
+      transition: transform .2s, background .2s;
+    }
+    .embed-toggle.active {
+      background: #34c759;
+    }
+    .embed-toggle.active span {
+      transform: translateX(16px);
+      background: #fff;
+    }
+    body.light-mode .embed-toggle { background: rgba(0,0,0,0.12); }
+    body.light-mode .embed-toggle span { background: rgba(0,0,0,0.30); }
+    body.light-mode .embed-toggle.active { background: #34c759; }
+    body.light-mode .embed-toggle.active span { background: #fff; }
+
+    /* Preview */
+    .embed-preview-wrap {
+      margin-bottom: 12px;
+    }
+    .embed-preview-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      margin-bottom: 6px;
+    }
+    body.light-mode .embed-preview-label { color: rgba(0,0,0,0.28); }
+    .embed-preview-frame {
+      width: 100%;
+      height: 130px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #000;
+    }
+    body.light-mode .embed-preview-frame {
+      border-color: rgba(0,0,0,0.08);
+      background: #f5f5f5;
+    }
+    .embed-preview-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    /* Code output */
+    .embed-code-wrap {
+      margin-bottom: 10px;
+    }
+    .embed-gen-code {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      color: rgba(255,255,255,0.55);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 10px;
+      line-height: 1.5;
+      padding: 10px 12px;
+      resize: none;
+      height: 56px;
+      outline: none;
+    }
+    body.light-mode .embed-gen-code {
+      background: rgba(0,0,0,0.03);
+      border-color: rgba(0,0,0,0.08);
+      color: rgba(0,0,0,0.50);
+    }
+
+    /* Copy buttons */
+    .embed-copy-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .embed-copy-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.70);
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .embed-copy-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
+    .embed-copy-btn:hover {
+      background: rgba(255,255,255,0.14);
+      color: rgba(255,255,255,0.95);
+    }
+    .embed-copy-url-btn {
+      border-color: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.04);
+    }
+    body.light-mode .embed-copy-btn {
+      border-color: rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.05);
+      color: rgba(0,0,0,0.55);
+    }
+    body.light-mode .embed-copy-btn:hover {
+      background: rgba(0,0,0,0.10);
+      color: rgba(0,0,0,0.85);
+    }
+    .embed-copy-feedback {
+      font-family: 'Inter', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      color: #34c759;
+      text-align: center;
+      height: 14px;
+      transition: opacity .2s;
+      opacity: 0;
+    }
+    .embed-copy-feedback.show { opacity: 1; }
+
     /* ── Divider ─────────────────────────────────────────── */
     .modal-divider {
       height: 1px;
@@ -1478,6 +1729,7 @@
       <button class="modal-tab" data-tab="countdown">Timer</button>
       <button class="modal-tab" data-tab="sound">Sound</button>
       <button class="modal-tab" data-tab="radio">Radio</button>
+      <button class="modal-tab" data-tab="embed">Embed</button>
     </div>
 
     <!-- Tab content wrapper -->
@@ -1504,22 +1756,6 @@
       <div class="setting-section">
         <div class="setting-label">Timezone</div>
         <select class="tz-select" id="tz-select"></select>
-      </div>
-      <div class="modal-divider"></div>
-      <div class="setting-section">
-        <div class="setting-label">Embed This Clock</div>
-        <div class="embed-box">
-          <textarea class="embed-code" id="embed-code" readonly><iframe src="https://flapclock.com/" width="100%" height="260" frameborder="0" style="border-radius:16px;overflow:hidden;" allow="geolocation"></iframe></textarea>
-          <button class="copy-btn" id="copy-btn" title="Copy code">
-            <svg id="copy-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-            </svg>
-            <svg id="check-icon" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </button>
-        </div>
-        <div class="copy-feedback" id="copy-feedback">Copied to clipboard!</div>
       </div>
     </div>
 
@@ -1835,6 +2071,85 @@
       </div>
     </div>
 
+    <!-- ── TAB: Embed ── -->
+    <div class="tab-panel" id="tab-embed">
+
+      <!-- Presets -->
+      <div class="embed-presets">
+        <button class="embed-preset-btn" data-preset="minimal">Minimal</button>
+        <button class="embed-preset-btn" data-preset="study">Study Mode</button>
+        <button class="embed-preset-btn" data-preset="dev">Developer</button>
+        <button class="embed-preset-btn" data-preset="lofi">Lofi Mode</button>
+        <button class="embed-preset-btn" data-preset="full">Full Info</button>
+      </div>
+
+      <!-- Controls -->
+      <div class="embed-controls">
+
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Theme</span>
+          <div class="embed-seg" id="embed-theme">
+            <button class="embed-seg-btn active" data-val="auto">Auto</button>
+            <button class="embed-seg-btn" data-val="dark">Dark</button>
+            <button class="embed-seg-btn" data-val="light">Light</button>
+          </div>
+        </div>
+
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Format</span>
+          <div class="embed-seg" id="embed-format">
+            <button class="embed-seg-btn active" data-val="12h">12h</button>
+            <button class="embed-seg-btn" data-val="24h">24h</button>
+          </div>
+        </div>
+
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Show Date</span>
+          <button class="embed-toggle active" id="etog-date" data-key="show_date"><span></span></button>
+        </div>
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Show Location</span>
+          <button class="embed-toggle active" id="etog-location" data-key="show_location"><span></span></button>
+        </div>
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Show Weather</span>
+          <button class="embed-toggle active" id="etog-weather" data-key="show_weather"><span></span></button>
+        </div>
+        <div class="embed-ctrl-row">
+          <span class="embed-ctrl-label">Show Seconds</span>
+          <button class="embed-toggle" id="etog-seconds" data-key="show_seconds"><span></span></button>
+        </div>
+
+      </div>
+
+      <!-- Live Preview -->
+      <div class="embed-preview-wrap">
+        <div class="embed-preview-label">Preview</div>
+        <div class="embed-preview-frame">
+          <iframe id="embed-preview-iframe" src="https://flapclock.com/embed?theme=auto&format=12h&show_date=1&show_location=1&show_weather=1&show_seconds=0" frameborder="0" scrolling="no" allow="geolocation"></iframe>
+        </div>
+      </div>
+
+      <!-- Generated Code -->
+      <div class="embed-code-wrap">
+        <textarea class="embed-gen-code" id="embed-gen-code" readonly></textarea>
+      </div>
+
+      <!-- Copy Buttons -->
+      <div class="embed-copy-row">
+        <button class="embed-copy-btn" id="embed-copy-code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy Embed Code
+        </button>
+        <button class="embed-copy-btn embed-copy-url-btn" id="embed-copy-url">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copy URL
+        </button>
+      </div>
+      <div class="embed-copy-feedback" id="embed-copy-feedback"></div>
+
+    </div>
+
     </div><!-- /tab-content-wrap -->
 
     <!-- ── About ── -->
@@ -1870,11 +2185,11 @@
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
         </a>
         <!-- Threads -->
-        <a href="https://www.threads.net/intent/post?text=Flap%20Clock%20%E2%80%93%20Clean%20Fullscreen%20Clock%20for%20Desktop%20%26%20Mobile%20https%3A%2F%2Fflapclock.com" target="_blank" rel="noopener" class="share-icon-btn sib-th" title="Share on Threads">
+        <a href="https://www.threads.net/intent/post?text=Flap%20Clock%20%E2%80%93%20Clean%20Fullscreen%20Clock%20for%20Desktop%20%26%20Mobile%20https%3A%2F%2Fflapclock.com%20%23flapclock" target="_blank" rel="noopener" class="share-icon-btn sib-th" title="Share on Threads">
           <svg viewBox="0 0 192 192" fill="currentColor"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.23c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.11 5.864 14.05-7.314-1.244-15.224-1.626-23.68-1.14-23.82 1.371-39.134 15.264-38.105 34.568.522 9.792 5.4 18.216 13.735 23.719 7.047 4.652 16.124 6.927 25.557 6.412 12.458-.683 22.231-5.436 29.049-14.127 5.178-6.6 8.453-15.153 9.899-25.93 5.937 3.583 10.337 8.298 12.767 13.966 4.132 9.635 4.373 25.468-8.546 38.376-11.319 11.308-24.925 16.2-45.488 16.351-22.809-.169-40.06-7.484-51.275-21.742C35.236 139.966 29.808 120.682 29.605 96c.203-24.682 5.63-43.966 16.133-57.317C56.954 24.425 74.206 17.11 97.015 16.94c22.975.17 40.526 7.52 52.171 21.847 5.71 7.026 9.988 15.73 12.737 25.98l16.146-4.30c-3.399-12.563-8.833-23.405-16.253-32.432C147.036 10.983 125.667 1.206 97.101 1h-.241c-28.51.205-50.121 10.22-64.24 27.779C20.031 43.424 13.635 65.618 13.399 96v.36c.236 30.382 6.632 52.576 19.262 67.221 14.12 17.559 35.73 27.574 64.24 27.779h.241c25.957-.185 44.271-6.979 59.396-22.078 19.701-19.68 19.13-44.232 12.642-59.276-4.646-10.82-13.278-19.559-27.643-24.018zM95.186 134.47c-10.399.577-21.17-4.08-22.211-14.177-.76-7.296 5.188-15.452 21.905-16.426 1.915-.11 3.797-.162 5.648-.162 6.338 0 12.27.619 17.7 1.783-2.013 25.156-13.317 28.39-23.042 28.982z"/></svg>
         </a>
         <!-- Twitter / X -->
-        <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fflapclock.com&text=Flap%20Clock%20%E2%80%93%20Clean%20Fullscreen%20Clock%20for%20Desktop%20%26%20Mobile" target="_blank" rel="noopener" class="share-icon-btn sib-x" title="Share on X (Twitter)">
+        <a href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fflapclock.com&text=Flap%20Clock%20%E2%80%93%20Clean%20Fullscreen%20Clock%20for%20Desktop%20%26%20Mobile&hashtags=flapclock" target="_blank" rel="noopener" class="share-icon-btn sib-x" title="Share on X (Twitter)">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.259 5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </a>
         <!-- Copy Link -->
@@ -2331,10 +2646,10 @@
   const settingsBtn   = document.getElementById('settings-btn');
   const settingsModal = document.getElementById('settings-modal');
   const modalClose    = document.getElementById('modal-close');
-  const copyBtn       = document.getElementById('copy-btn');
-  const copyFeedback  = document.getElementById('copy-feedback');
-  const copyIcon      = document.getElementById('copy-icon');
-  const checkIcon     = document.getElementById('check-icon');
+  const copyBtn       = null; // removed — embed moved to Embed tab
+  const copyFeedback  = null;
+  const copyIcon      = null;
+  const checkIcon     = null;
   const tzSelect      = document.getElementById('tz-select');
 
   const TIMEZONES = [
@@ -2396,26 +2711,145 @@
     }
   });
 
-  copyBtn.addEventListener('click', () => {
-    const code = document.getElementById('embed-code').value;
-    navigator.clipboard.writeText(code).then(() => {
-      copyIcon.style.display  = 'none';
-      checkIcon.style.display = 'block';
-      copyFeedback.classList.add('show');
-      setTimeout(() => {
-        copyIcon.style.display  = 'block';
-        checkIcon.style.display = 'none';
-        copyFeedback.classList.remove('show');
-      }, 2000);
-    }).catch(() => {
-      const ta = document.getElementById('embed-code');
-      ta.select();
-      document.execCommand('copy');
-      copyFeedback.textContent = 'Copied!';
-      copyFeedback.classList.add('show');
-      setTimeout(() => copyFeedback.classList.remove('show'), 2000);
+  /* ══════════════════════════════════════════════════════
+     EMBED TAB
+  ══════════════════════════════════════════════════════ */
+  (function() {
+    const BASE = 'https://flapclock.com/embed';
+
+    // State
+    const state = {
+      theme: 'auto',
+      format: '12h',
+      show_date: 1,
+      show_location: 1,
+      show_weather: 1,
+      show_seconds: 0,
+    };
+
+    const PRESETS = {
+      minimal: { theme:'dark',  format:'24h', show_date:0, show_location:0, show_weather:0, show_seconds:0 },
+      study:   { theme:'dark',  format:'12h', show_date:1, show_location:0, show_weather:0, show_seconds:1 },
+      dev:     { theme:'dark',  format:'24h', show_date:1, show_location:1, show_weather:0, show_seconds:1 },
+      lofi:    { theme:'dark',  format:'12h', show_date:1, show_location:1, show_weather:0, show_seconds:0 },
+      full:    { theme:'auto',  format:'12h', show_date:1, show_location:1, show_weather:1, show_seconds:1 },
+    };
+
+    function buildURL() {
+      const p = new URLSearchParams({
+        theme:         state.theme,
+        format:        state.format,
+        show_date:     state.show_date,
+        show_location: state.show_location,
+        show_weather:  state.show_weather,
+        show_seconds:  state.show_seconds,
+      });
+      return BASE + '?' + p.toString();
+    }
+
+    function buildIframe() {
+      const url = buildURL();
+      return `<iframe src="${url}" width="100%" height="260" frameborder="0" style="border-radius:16px;overflow:hidden;" allow="geolocation"></iframe>`;
+    }
+
+    function refresh() {
+      const url = buildURL();
+      const iframe = document.getElementById('embed-preview-iframe');
+      if (iframe) iframe.src = url;
+      const code = document.getElementById('embed-gen-code');
+      if (code) code.value = buildIframe();
+      // sync UI
+      syncUI();
+    }
+
+    function syncUI() {
+      // Seg buttons
+      ['theme','format'].forEach(key => {
+        const seg = document.getElementById('embed-' + key);
+        if (!seg) return;
+        seg.querySelectorAll('.embed-seg-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.val === state[key]);
+        });
+      });
+      // Toggles
+      [['etog-date','show_date'],['etog-location','show_location'],['etog-weather','show_weather'],['etog-seconds','show_seconds']].forEach(([id, key]) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.toggle('active', !!state[key]);
+      });
+      // Preset active
+      document.querySelectorAll('.embed-preset-btn').forEach(btn => {
+        const p = PRESETS[btn.dataset.preset];
+        if (!p) return;
+        const match = Object.keys(p).every(k => p[k] === state[k]);
+        btn.classList.toggle('active', match);
+      });
+    }
+
+    function applyPreset(name) {
+      const p = PRESETS[name];
+      if (!p) return;
+      Object.assign(state, p);
+      refresh();
+    }
+
+    // Seg controls
+    ['theme','format'].forEach(key => {
+      const seg = document.getElementById('embed-' + key);
+      if (!seg) return;
+      seg.addEventListener('click', e => {
+        const btn = e.target.closest('.embed-seg-btn');
+        if (!btn) return;
+        state[key] = btn.dataset.val;
+        refresh();
+      });
     });
-  });
+
+    // Toggles
+    document.querySelectorAll('.embed-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key;
+        state[key] = state[key] ? 0 : 1;
+        refresh();
+      });
+    });
+
+    // Presets
+    document.querySelectorAll('.embed-preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+    });
+
+    // Copy helpers
+    function copyText(text, label) {
+      const fb = document.getElementById('embed-copy-feedback');
+      const doShow = (msg) => {
+        if (!fb) return;
+        fb.textContent = msg;
+        fb.classList.add('show');
+        setTimeout(() => fb.classList.remove('show'), 2000);
+      };
+      navigator.clipboard.writeText(text).then(() => doShow(label + ' copied!'))
+        .catch(() => {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.cssText = 'position:fixed;opacity:0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          doShow(label + ' copied!');
+        });
+    }
+
+    const copyCodeBtn = document.getElementById('embed-copy-code');
+    if (copyCodeBtn) copyCodeBtn.addEventListener('click', () => copyText(buildIframe(), 'Embed code'));
+
+    const copyUrlBtn = document.getElementById('embed-copy-url');
+    if (copyUrlBtn) copyUrlBtn.addEventListener('click', () => copyText(buildURL(), 'URL'));
+
+    // Init
+    refresh();
+  })();
+
 
 
   /* ══════════════════════════════════════════════════════
@@ -3342,7 +3776,7 @@
 
     // X / Twitter
     const tw = document.getElementById('share-twitter');
-    if (tw) tw.href = 'https://twitter.com/intent/tweet?text=' + shareEnc + '&url=' + urlEnc;
+    if (tw) tw.href = 'https://twitter.com/intent/tweet?text=' + shareEnc + '&url=' + urlEnc + '&hashtags=flapclock';
 
     // Facebook
     const fb = document.getElementById('share-facebook');
@@ -3350,7 +3784,7 @@
 
     // Threads (web share via threads.net)
     const th = document.getElementById('share-threads');
-    if (th) th.href = 'https://www.threads.net/intent/post?text=' + shareEnc + '%20' + urlEnc;
+    if (th) th.href = 'https://www.threads.net/intent/post?text=' + shareEnc + '%20' + urlEnc + '%20%23flapclock';
 
     // WhatsApp
     const wa = document.getElementById('share-whatsapp');
