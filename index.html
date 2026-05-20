@@ -691,16 +691,134 @@
     body.light-mode .modal-divider { background: rgba(0,0,0,0.08); }
 
 
-    /* ── Modal footer ────────────────────────────────────── */
-    .modal-footer {
+    /* ── About + Share section ───────────────────────────── */
+    .modal-about {
       margin-top: 6px;
-      padding-top: 16px;
-      border-top: 1px solid rgba(255,255,255,0.07);
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      font-family: "Inter", sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.45);
+      line-height: 1.55;
+    }
+    body.light-mode .modal-about {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.08);
+      color: rgba(0,0,0,0.45);
+    }
+    .modal-about-header {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       gap: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .modal-about-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+      color: rgba(255,255,255,0.60);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    body.light-mode .modal-about-title { color: rgba(0,0,0,0.55); }
+    .modal-about-chevron {
+      width: 14px; height: 14px;
+      color: rgba(255,255,255,0.35);
+      transition: transform 0.25s ease;
+      flex-shrink: 0;
+    }
+    body.light-mode .modal-about-chevron { color: rgba(0,0,0,0.35); }
+    .modal-about-body {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease;
+      opacity: 0;
+      margin-top: 0;
+    }
+    .modal-about-body.open {
+      max-height: 300px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+    .modal-about-body p {
+      margin: 0 0 8px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.40);
+      line-height: 1.6;
+    }
+    body.light-mode .modal-about-body p { color: rgba(0,0,0,0.42); }
+    .modal-about-body p:last-child { margin-bottom: 0; }
+    /* Share row */
+    .modal-share-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
       flex-wrap: wrap;
+    }
+    .modal-share-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.30);
+      text-transform: uppercase;
+    }
+    body.light-mode .modal-share-label { color: rgba(0,0,0,0.35); }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.55);
+      font-family: "Inter", sans-serif;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .18s, border-color .18s, color .18s, transform .15s;
+    }
+    .share-btn:hover {
+      background: rgba(255,255,255,0.13);
+      border-color: rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.90);
+      transform: translateY(-1px);
+    }
+    .share-btn svg { width: 12px; height: 12px; }
+    body.light-mode .share-btn {
+      border-color: rgba(0,0,0,0.12);
+      background: rgba(0,0,0,0.05);
+      color: rgba(0,0,0,0.55);
+    }
+    body.light-mode .share-btn:hover {
+      background: rgba(0,0,0,0.10);
+      border-color: rgba(0,0,0,0.20);
+      color: rgba(0,0,0,0.85);
+    }
+    .share-btn.twitter  { --accent: #1d9bf0; }
+    .share-btn.facebook { --accent: #1877f2; }
+    .share-btn.copy-link { --accent: rgba(255,255,255,0.5); }
+    .share-btn:hover { border-color: var(--accent); color: var(--accent); }
+    body.light-mode .share-btn.twitter:hover  { border-color: #1d9bf0; color: #1d9bf0; }
+    body.light-mode .share-btn.facebook:hover { border-color: #1877f2; color: #1877f2; }
+
+    /* ── Modal footer ────────────────────────────────────── */
+    .modal-footer {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
       font-family: "Inter", sans-serif;
       font-size: 10px;
       font-weight: 500;
@@ -711,6 +829,19 @@
       border-top-color: rgba(0,0,0,0.08);
       color: rgba(0,0,0,0.35);
     }
+    .modal-footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .modal-footer-copy {
+      font-size: 10px;
+      color: rgba(255,255,255,0.20);
+      letter-spacing: 0.03em;
+    }
+    body.light-mode .modal-footer-copy { color: rgba(0,0,0,0.25); }
     .modal-footer a {
       color: rgba(255,255,255,0.45);
       text-decoration: none;
@@ -1256,10 +1387,44 @@
       </div>
     </div>
 
+    <!-- ── About + Share ── -->
+    <div class="modal-about">
+      <div class="modal-about-header" id="about-toggle">
+        <div class="modal-about-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          About: Flip Clock — why I made this
+        </div>
+        <svg class="modal-about-chevron" id="about-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="modal-about-body" id="about-body">
+        <p>I built Flip Clock because I wanted a distraction-free, beautiful clock on my screen — something that felt calm and analogue in a world full of blinking notifications.</p>
+        <p>Most clock apps are either too minimal (no context) or too cluttered. I wanted something right in the middle: shows the time elegantly, gives you the date and weather, and stays out of your way.</p>
+        <p>It's also a personal love letter to the mechanical flip clocks of the 70s — that satisfying <em>clack</em> of the flap turning. I hope it brings you a little peace every time you glance at it. 🕰️</p>
+        <div class="modal-share-row">
+          <span class="modal-share-label">Share:</span>
+          <a class="share-btn twitter" id="share-twitter" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.258 5.63 5.906-5.63Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            X / Twitter
+          </a>
+          <a class="share-btn facebook" id="share-facebook" href="#" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </a>
+          <a class="share-btn copy-link" id="share-copy" href="#">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy Link
+          </a>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-footer">
-      Powered by <a href="https://euphorya.co" target="_blank" rel="noopener">Euphorya</a>
-      <span class="modal-footer-sep">|</span>
-      Made by <a href="https://fajarsiddiq.com" target="_blank" rel="noopener">Fajar Siddiq</a>
+      <div class="modal-footer-row">
+        Powered by <a href="https://euphorya.co" target="_blank" rel="noopener">Euphorya</a>
+        <span class="modal-footer-sep">|</span>
+        Made by <a href="https://fajarsiddiq.com" target="_blank" rel="noopener">Fajar Siddiq</a>
+      </div>
+      <div class="modal-footer-copy">© <span id="footer-year"></span> <a href="https://flapclock.com" target="_blank" rel="noopener">FlapClock.com</a></div>
     </div>
 
   </div>
@@ -2337,6 +2502,70 @@
 
   // Kick it off — after a small delay so the page has focus
   setTimeout(requestWakeLock, 500);
+
+  /* ══════════════════════════════════════════════════════
+     ABOUT ACCORDION
+  ══════════════════════════════════════════════════════ */
+  (function() {
+    const toggle  = document.getElementById('about-toggle');
+    const body    = document.getElementById('about-body');
+    const chevron = document.getElementById('about-chevron');
+    if (!toggle) return;
+    toggle.addEventListener('click', () => {
+      const open = body.classList.toggle('open');
+      chevron.style.transform = open ? 'rotate(180deg)' : '';
+    });
+  })();
+
+  /* ══════════════════════════════════════════════════════
+     SHARE BUTTONS
+  ══════════════════════════════════════════════════════ */
+  (function() {
+    const siteUrl  = 'https://flapclock.com';
+    const shareMsg = 'Check out Flip Clock — a beautiful fullscreen flip clock for desktop & mobile 🕰️';
+
+    const tw = document.getElementById('share-twitter');
+    if (tw) tw.href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareMsg) + '&url=' + encodeURIComponent(siteUrl);
+
+    const fb = document.getElementById('share-facebook');
+    if (fb) fb.href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(siteUrl);
+
+    const cp = document.getElementById('share-copy');
+    if (cp) {
+      cp.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          await navigator.clipboard.writeText(siteUrl);
+        } catch(err) {
+          // Fallback
+          const ta = document.createElement('textarea');
+          ta.value = siteUrl;
+          ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          ta.remove();
+        }
+        const orig = cp.innerHTML;
+        cp.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+        cp.style.color = '#4ade80';
+        cp.style.borderColor = '#4ade80';
+        setTimeout(() => {
+          cp.innerHTML = orig;
+          cp.style.color = '';
+          cp.style.borderColor = '';
+        }, 2000);
+      });
+    }
+  })();
+
+  /* ══════════════════════════════════════════════════════
+     DYNAMIC COPYRIGHT YEAR
+  ══════════════════════════════════════════════════════ */
+  (function() {
+    const el = document.getElementById('footer-year');
+    if (el) el.textContent = new Date().getFullYear();
+  })();
 
 </script>
 </body>
