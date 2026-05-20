@@ -152,8 +152,8 @@
     .hinge {
       position: absolute;
       left: 0; right: 0;
-      top: calc(50% - 3px);
-      height: 6px;
+      top: calc(50% - 5px);
+      height: 10px;
       z-index: 20;
       pointer-events: none;
     }
@@ -163,6 +163,7 @@
       --bg:         #000;
       --card-bg:    #0F0E0E;
       --hinge-col:  #000;
+      --hinge-line: #000;
       --digit-col:  #d0d0cb;
       --badge-col:  rgba(208,208,203,0.78);
       --meta-col:   rgba(208,208,203,0.28);
@@ -172,7 +173,8 @@
     body.light-mode {
       --bg:         #ffffff;
       --card-bg:    #F1F1F1;
-      --hinge-col:  #000000;
+      --hinge-col:  #ffffff;
+      --hinge-line: #000000;
       --digit-col:  #000000;
       --badge-col:  #000000;
       --meta-col:   #000000;
@@ -185,7 +187,7 @@
       background: var(--card-bg);
       transition: background .35s;
     }
-    .card-bottom { border-top: 2px solid var(--hinge-col); }
+    .card-bottom { border-top: 2px solid var(--hinge-line); }
     .hinge { background: var(--hinge-col); transition: background .35s; }
     .digit-wrap span { color: var(--digit-col); transition: color .35s; }
     .ampm-badge { color: var(--badge-col); transition: color .35s; }
