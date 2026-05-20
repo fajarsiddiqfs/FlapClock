@@ -860,9 +860,15 @@
     <span class="meta meta-sep"> · </span>
     <svg class="meta-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg>
     <span class="meta" id="loc-span">Locating…</span>
-    <span class="meta meta-sep" id="weather-sep" style="display:none"> · </span>
-    <svg class="meta-icon" id="weather-icon-el" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM4 10.5H1v2h3zm9-9.95h-2V3.5h2zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5v2h3v-2zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg>
-    <span class="meta" id="weather-span" style="display:none"></span>
+    <!-- Weather inline (desktop/landscape only) -->
+    <span class="meta meta-sep weather-inline" id="weather-sep" style="display:none"> · </span>
+    <svg class="meta-icon weather-inline" id="weather-icon-el" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM4 10.5H1v2h3zm9-9.95h-2V3.5h2zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5v2h3v-2zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg>
+    <span class="meta weather-inline" id="weather-span" style="display:none"></span>
+  </div>
+  <!-- Weather row (portrait/mobile only) -->
+  <div class="meta-row weather-row" id="weather-row" style="display:none">
+    <svg class="meta-icon" id="weather-icon-el-mobile" viewBox="0 0 24 24" fill="currentColor"><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM4 10.5H1v2h3zm9-9.95h-2V3.5h2zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5v2h3v-2zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg>
+    <span class="meta" id="weather-span-mobile"></span>
   </div>
 
 </div>
@@ -1279,7 +1285,7 @@
   let rt;
   window.addEventListener('resize', () => {
     clearTimeout(rt);
-    rt = setTimeout(() => { sizeCards(); tick(); }, 60);
+    rt = setTimeout(() => { sizeCards(); tick(); applyWeatherLayout(); }, 60);
   });
 
   /* ── fullscreen ─────────────────────────────────────── */
@@ -1470,15 +1476,40 @@
         const code = w.weathercode;
         const icon = weatherIcon(code);
         const desc = weatherDesc(code);
+        const weatherText = `${temp}°C  ${desc}`;
+
+        // Inline (desktop/landscape): show in the same meta-row
         document.getElementById('weather-sep').style.display = '';
         const iconEl = document.getElementById('weather-icon-el');
         iconEl.style.display = '';
         iconEl.innerHTML = icon;
         const span = document.getElementById('weather-span');
         span.style.display = '';
-        span.textContent = `${temp}°C  ${desc}`;
+        span.textContent = weatherText;
+
+        // Mobile row (portrait): separate row below date/location
+        const iconElMobile = document.getElementById('weather-icon-el-mobile');
+        iconElMobile.innerHTML = icon;
+        document.getElementById('weather-span-mobile').textContent = weatherText;
+
+        // Show/hide based on current orientation
+        applyWeatherLayout();
       })
       .catch(() => {});
+  }
+
+  function applyWeatherLayout() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const hasWeather = document.getElementById('weather-span').textContent !== '';
+    if (!hasWeather) return;
+
+    // Inline elements: show in landscape, hide in portrait
+    document.querySelectorAll('.weather-inline').forEach(el => {
+      el.style.display = isLandscape ? '' : 'none';
+    });
+    // Mobile row: show in portrait, hide in landscape
+    const weatherRow = document.getElementById('weather-row');
+    weatherRow.style.display = isLandscape ? 'none' : '';
   }
 
   function weatherDesc(code) {
