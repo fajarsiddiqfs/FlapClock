@@ -1752,6 +1752,7 @@
                  min="0.6" max="1.0" step="0.01" value="1.0">
           <span class="clock-size-value" id="clock-size-value">1.0×</span>
         </div>
+        <div style="margin-top:6px;font-size:11px;opacity:0.45;line-height:1.4;">*Click AM/PM on top left for lightmode/darkmode</div>
       </div>
       <div class="modal-divider"></div>
       <div class="setting-section">
@@ -2082,37 +2083,11 @@
     <!-- ── TAB: Embed ── -->
     <div class="tab-panel" id="tab-embed">
 
-      <!-- Presets -->
-      <div class="embed-presets">
-        <button class="embed-preset-btn" data-preset="minimal">Minimal</button>
-        <button class="embed-preset-btn" data-preset="study">Study</button>
-        <button class="embed-preset-btn" data-preset="dev">Dev</button>
-        <button class="embed-preset-btn" data-preset="lofi">Lofi</button>
-        <button class="embed-preset-btn" data-preset="full">Full</button>
-      </div>
-
       <!-- Controls -->
       <div class="embed-controls">
 
         <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Theme</span>
-          <div class="embed-seg" id="embed-theme">
-            <button class="embed-seg-btn active" data-val="auto">Auto</button>
-            <button class="embed-seg-btn" data-val="dark">Dark</button>
-            <button class="embed-seg-btn" data-val="light">Light</button>
-          </div>
-        </div>
-
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Format</span>
-          <div class="embed-seg" id="embed-format">
-            <button class="embed-seg-btn active" data-val="12h">12h</button>
-            <button class="embed-seg-btn" data-val="24h">24h</button>
-          </div>
-        </div>
-
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Show Date</span>
+          <span class="embed-ctrl-label">Show Date/Day</span>
           <button class="embed-toggle active" id="etog-date" data-key="show_date"><span></span></button>
         </div>
         <div class="embed-ctrl-row">
@@ -2122,10 +2097,6 @@
         <div class="embed-ctrl-row">
           <span class="embed-ctrl-label">Show Weather</span>
           <button class="embed-toggle active" id="etog-weather" data-key="show_weather"><span></span></button>
-        </div>
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Show Seconds</span>
-          <button class="embed-toggle" id="etog-seconds" data-key="show_seconds"><span></span></button>
         </div>
 
       </div>
