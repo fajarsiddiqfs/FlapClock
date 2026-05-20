@@ -2086,18 +2086,6 @@
       <!-- Controls -->
       <div class="embed-controls">
 
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Show Date/Day</span>
-          <button class="embed-toggle active" id="etog-date" data-key="show_date"><span></span></button>
-        </div>
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Show Location</span>
-          <button class="embed-toggle active" id="etog-location" data-key="show_location"><span></span></button>
-        </div>
-        <div class="embed-ctrl-row">
-          <span class="embed-ctrl-label">Show Weather</span>
-          <button class="embed-toggle active" id="etog-weather" data-key="show_weather"><span></span></button>
-        </div>
 
       </div>
 
@@ -2105,7 +2093,7 @@
       <div class="embed-preview-wrap">
         <div class="embed-preview-label">Preview</div>
         <div class="embed-preview-frame">
-          <iframe id="embed-preview-iframe" src="https://flapclock.com/embed?theme=auto&format=12h&show_date=1&show_location=1&show_weather=1&show_seconds=0" frameborder="0" scrolling="no" allow="geolocation"></iframe>
+          <iframe id="embed-preview-iframe" src="https://flapclock.com/embed?theme=auto&format=12h&show_seconds=0" frameborder="0" scrolling="no" allow="geolocation"></iframe>
         </div>
       </div>
 
@@ -2700,27 +2688,21 @@
     const state = {
       theme: 'auto',
       format: '12h',
-      show_date: 1,
-      show_location: 1,
-      show_weather: 1,
       show_seconds: 0,
     };
 
     const PRESETS = {
-      minimal: { theme:'dark',  format:'24h', show_date:0, show_location:0, show_weather:0, show_seconds:0 },
-      study:   { theme:'dark',  format:'12h', show_date:1, show_location:0, show_weather:0, show_seconds:1 },
-      dev:     { theme:'dark',  format:'24h', show_date:1, show_location:1, show_weather:0, show_seconds:1 },
-      lofi:    { theme:'dark',  format:'12h', show_date:1, show_location:1, show_weather:0, show_seconds:0 },
-      full:    { theme:'auto',  format:'12h', show_date:1, show_location:1, show_weather:1, show_seconds:1 },
+      minimal: { theme:'dark',  format:'24h', show_seconds:0 },
+      study:   { theme:'dark',  format:'12h', show_seconds:1 },
+      dev:     { theme:'dark',  format:'24h', show_seconds:1 },
+      lofi:    { theme:'dark',  format:'12h', show_seconds:0 },
+      full:    { theme:'auto',  format:'12h', show_seconds:1 },
     };
 
     function buildURL() {
       const p = new URLSearchParams({
         theme:         state.theme,
         format:        state.format,
-        show_date:     state.show_date,
-        show_location: state.show_location,
-        show_weather:  state.show_weather,
         show_seconds:  state.show_seconds,
       });
       return BASE + '?' + p.toString();
@@ -2751,7 +2733,7 @@
         });
       });
       // Toggles
-      [['etog-date','show_date'],['etog-location','show_location'],['etog-weather','show_weather'],['etog-seconds','show_seconds']].forEach(([id, key]) => {
+      [['etog-seconds','show_seconds']].forEach(([id, key]) => {
         const btn = document.getElementById(id);
         if (btn) btn.classList.toggle('active', !!state[key]);
       });
