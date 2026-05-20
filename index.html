@@ -488,6 +488,19 @@
 
     /* loading pulse on playing item */
     @keyframes soundPulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+
+    @keyframes radioPulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.4; transform:scale(0.75); }
+    }
+    body.light-mode #radio-now-playing {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.08);
+    }
+    body.light-mode #radio-now-title { color: rgba(0,0,0,0.8); }
+    body.light-mode #radio-stop-btn  { color: rgba(0,0,0,0.4); }
+    .radio-item { cursor: pointer; }
+
     .sound-item.playing .sound-name { animation: soundPulse 2s ease-in-out infinite; }
 
     /* Volume slider */
@@ -982,7 +995,7 @@
       border: 1px solid rgba(255,255,255,0.10);
       background: rgba(255,255,255,0.06);
       color: #fff;
-      font-family: "Inter", sans-serif;
+      font-family: "Oswald", sans-serif;
       font-size: 22px;
       font-weight: 700;
       text-align: center;
@@ -1045,7 +1058,7 @@
       color: #fff;
       font-family: "Inter", sans-serif;
       font-size: 20px;
-      font-weight: 700;
+      font-weight: 600;
       text-align: center;
     }
     .cd-input:focus { outline: none; border-color: rgba(255,255,255,0.25); }
@@ -1072,11 +1085,11 @@
     body.light-mode .cd-colon { color: rgba(0,0,0,0.25); }
     .cd-display {
       text-align: center;
-      font-family: "Oswald", sans-serif;
+      font-family: "Inter", sans-serif;
       font-size: 38px;
-      font-weight: 700;
+      font-weight: 300;
       color: #fff;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
       margin-bottom: 12px;
       min-height: 46px;
     }
@@ -1192,6 +1205,7 @@
       <button class="modal-tab" data-tab="alarm">Alarm</button>
       <button class="modal-tab" data-tab="countdown">Timer</button>
       <button class="modal-tab" data-tab="sound">Sound</button>
+      <button class="modal-tab" data-tab="radio">Radio</button>
     </div>
 
     <!-- ── TAB: General ── -->
@@ -1397,6 +1411,134 @@
       </div>
     </div>
 
+
+    <!-- ── Radio ── -->
+    <div class="tab-panel" id="tab-radio" style="display:none">
+      <div class="setting-label" style="margin-bottom:14px">Lo-Fi &amp; Chill Radio</div>
+      <div class="sound-list" id="radio-list">
+
+        <div class="radio-item" data-url="https://streams.ilovemusic.de/iloveradio17.mp3" data-title="Lo-Fi Hip Hop">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Lo-Fi Hip Hop</div>
+            <div class="sound-desc">Beats to study &amp; relax to</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="radio-item" data-url="https://streams.ilovemusic.de/iloveradio2.mp3" data-title="Chillhop">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Chillhop</div>
+            <div class="sound-desc">Mellow instrumental grooves</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="radio-item" data-url="https://ice1.somafm.com/groovesalad-128-mp3" data-title="Groove Salad">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Groove Salad</div>
+            <div class="sound-desc">SomaFM · ambient downtempo</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="radio-item" data-url="https://ice1.somafm.com/deepspaceone-128-mp3" data-title="Deep Space One">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="4.93" y1="4.93" x2="9.17" y2="9.17"/><line x1="14.83" y1="14.83" x2="19.07" y2="19.07"/><line x1="14.83" y1="9.17" x2="19.07" y2="4.93"/><line x1="4.93" y1="19.07" x2="9.17" y2="14.83"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Deep Space One</div>
+            <div class="sound-desc">SomaFM · deep ambient space</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="radio-item" data-url="https://ice1.somafm.com/dronezone-128-mp3" data-title="Drone Zone">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Drone Zone</div>
+            <div class="sound-desc">SomaFM · cinematic drone</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="radio-item" data-url="https://ice1.somafm.com/lush-128-mp3" data-title="Lush">
+          <div class="sound-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M12 12C12 12 7 10 7 5a5 5 0 0 1 10 0c0 5-5 7-5 7z"/></svg>
+          </div>
+          <div class="sound-info">
+            <div class="sound-name">Lush</div>
+            <div class="sound-desc">SomaFM · indie dream pop</div>
+          </div>
+          <div class="sound-ctrl">
+            <div class="sound-play-btn radio-play-btn">
+              <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Now Playing bar -->
+      <div id="radio-now-playing" style="display:none;margin-top:14px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:10px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0;animation:radioPulse 1.4s ease-in-out infinite;"></div>
+        <div style="flex:1;min-width:0;">
+          <div id="radio-now-title" style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+          <div style="font-family:Inter,sans-serif;font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px;">Live Radio</div>
+        </div>
+        <button id="radio-stop-btn" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.45);padding:4px;display:flex;align-items:center;justify-content:center;" title="Stop">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+        </button>
+      </div>
+      <div id="radio-error" style="display:none;margin-top:10px;font-family:Inter,sans-serif;font-size:11px;color:rgba(255,100,100,0.8);text-align:center;"></div>
+
+      <!-- Volume -->
+      <div style="margin-top:16px;">
+        <div class="setting-label" style="margin-bottom:8px">Volume</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <svg style="width:14px;height:14px;flex-shrink:0;color:var(--meta-col);" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12A4.5 4.5 0 0 0 16 7.97V16a4.48 4.48 0 0 0 2.5-4zM5 9v6h4l5 5V4L9 9H5z"/></svg>
+          <input type="range" id="radio-volume" min="0" max="100" value="70" class="volume-slider">
+          <svg style="width:16px;height:16px;flex-shrink:0;color:var(--meta-col);" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        </div>
+      </div>
+    </div>
+
     <!-- ── About ── -->
     <div class="modal-about">
       <div class="modal-about-header" id="about-toggle">
@@ -1447,7 +1589,7 @@
     <div class="modal-footer">
       <a class="mf-left" href="https://euphorya.co" target="_blank" rel="noopener">Powered by Euphorya</a>
       <a class="mf-center" href="https://flapclock.com" target="_blank" rel="noopener">FlapClock.com © <span id="footer-year">2026</span></a>
-      <a class="mf-right" href="https://fajarsiddiq.com" target="_blank" rel="noopener">Made by Fajarsiddiq</a>
+      <a class="mf-right" href="https://fajarsiddiq.com" target="_blank" rel="noopener">Made by Fajar Siddiq</a>
     </div>
 
   </div>
@@ -2505,6 +2647,120 @@
     if (masterGain) masterGain.gain.value = this.value / 100;
   });
 
+
+  /* ══════════════════════════════════════════════════════
+     RADIO PLAYER
+  ══════════════════════════════════════════════════════ */
+  (function() {
+    let radioAudio    = null;
+    let radioPlaying  = null; // currently playing .radio-item element
+
+    function getRadioVolume() {
+      const v = document.getElementById('radio-volume');
+      return v ? parseInt(v.value, 10) / 100 : 0.7;
+    }
+
+    function setNowPlaying(title) {
+      const bar   = document.getElementById('radio-now-playing');
+      const label = document.getElementById('radio-now-title');
+      if (!bar || !label) return;
+      if (title) {
+        label.textContent = title;
+        bar.style.display = 'flex';
+      } else {
+        bar.style.display = 'none';
+      }
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('radio-error');
+      if (!el) return;
+      el.textContent = msg;
+      el.style.display = msg ? 'block' : 'none';
+    }
+
+    function stopRadio(restoreUI) {
+      if (radioAudio) {
+        radioAudio.pause();
+        radioAudio.src = '';
+        radioAudio = null;
+      }
+      if (radioPlaying) {
+        radioPlaying.classList.remove('playing');
+        const playBtn = radioPlaying.querySelector('.radio-play-btn');
+        if (playBtn) {
+          playBtn.querySelector('.icon-play').style.display  = '';
+          playBtn.querySelector('.icon-pause').style.display = 'none';
+        }
+        radioPlaying = null;
+      }
+      setNowPlaying(null);
+      showError('');
+    }
+
+    function playRadio(item) {
+      const url   = item.dataset.url;
+      const title = item.dataset.title;
+
+      // If clicking the already-playing item, stop it
+      if (radioPlaying === item) { stopRadio(true); return; }
+
+      stopRadio(true);
+      showError('');
+
+      radioAudio = new Audio();
+      radioAudio.crossOrigin = 'anonymous';
+      radioAudio.volume      = getRadioVolume();
+      radioAudio.src         = url;
+      radioAudio.play().catch(err => {
+        showError('Stream unavailable. Try another station.');
+        stopRadio(true);
+      });
+
+      radioAudio.addEventListener('error', () => {
+        showError('Stream unavailable. Try another station.');
+        stopRadio(true);
+      });
+
+      radioPlaying = item;
+      item.classList.add('playing');
+      const playBtn = item.querySelector('.radio-play-btn');
+      if (playBtn) {
+        playBtn.querySelector('.icon-play').style.display  = 'none';
+        playBtn.querySelector('.icon-pause').style.display = '';
+      }
+      setNowPlaying(title);
+    }
+
+    // Radio list click
+    const radioList = document.getElementById('radio-list');
+    if (radioList) {
+      radioList.addEventListener('click', e => {
+        const item = e.target.closest('.radio-item');
+        if (item) playRadio(item);
+      });
+    }
+
+    // Stop button
+    const stopBtn = document.getElementById('radio-stop-btn');
+    if (stopBtn) stopBtn.addEventListener('click', () => stopRadio(true));
+
+    // Volume slider
+    const volSlider = document.getElementById('radio-volume');
+    if (volSlider) {
+      volSlider.addEventListener('input', function() {
+        if (radioAudio) radioAudio.volume = this.value / 100;
+      });
+    }
+
+    // Light-mode now-playing dot colour
+    const observer = new MutationObserver(() => {
+      const dot = document.querySelector('#radio-now-playing div[style*="border-radius:50%"]');
+      if (dot) dot.style.background = document.body.classList.contains('light-mode') ? '#22c55e' : '#4ade80';
+    });
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+  })();
+
   /* ══════════════════════════════════════════════════════
      WAKE LOCK — keep screen on for desktop & mobile
      Primary:  Screen Wake Lock API (Chrome 84+, Edge, Safari 16.4+)
@@ -2575,7 +2831,7 @@
   ══════════════════════════════════════════════════════ */
   (function() {
     const siteUrl  = 'https://flapclock.com';
-    const shareMsg = 'Flap Clock – Clean Fullscreen Digital Clock for Desktop & Mobile\nhttps://flapclock.com';
+    const shareMsg = 'Flap Clock – Clean Fullscreen Digital Clock for Desktop & Mobile';
     const shareEnc = encodeURIComponent(shareMsg);
     const urlEnc   = encodeURIComponent(siteUrl);
 
