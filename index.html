@@ -637,8 +637,12 @@
       box-shadow: 0 24px 60px rgba(0,0,0,0.6);
       font-family: 'Inter', sans-serif;
       position: relative;
-      max-height: 90vh;
-      overflow-y: auto;
+      height: 88vh;
+      max-height: 680px;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
     body.light-mode .modal {
       background: #f7f7f7;
@@ -651,6 +655,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 24px;
+      flex-shrink: 0;
     }
     .modal-title {
       font-size: 17px;
@@ -957,7 +962,7 @@
 
     /* ── Modal footer — 3-col ── */
     .modal-footer {
-      margin-top: 10px;
+      margin-top: 0;
       padding-top: 12px;
       border-top: 1px solid rgba(255,255,255,0.07);
       display: grid;
@@ -968,6 +973,7 @@
       font-size: 10px;
       font-weight: 500;
       letter-spacing: 0.02em;
+      flex-shrink: 0;
     }
     body.light-mode .modal-footer { border-top-color: rgba(0,0,0,0.08); }
     .modal-footer a {
@@ -989,11 +995,13 @@
       color: rgba(255,255,255,0.32);
       justify-self: end;
     }
-    .mf-left:hover, .mf-right:hover { color: rgba(255,255,255,0.70); }
+    .mf-left:hover, .mf-right:hover { color: rgba(255,255,255,0.32); }
+    .mf-left:hover .mf-link, .mf-right:hover .mf-link { color: rgba(255,255,255,0.70); text-decoration: underline; }
     .mf-center:hover { color: rgba(255,255,255,0.90); }
     body.light-mode .mf-left, body.light-mode .mf-right { color: rgba(0,0,0,0.35); }
     body.light-mode .mf-center { color: rgba(0,0,0,0.60); }
-    body.light-mode .mf-left:hover, body.light-mode .mf-right:hover { color: rgba(0,0,0,0.75); }
+    body.light-mode .mf-left:hover, body.light-mode .mf-right:hover { color: rgba(0,0,0,0.35); }
+    body.light-mode .mf-left:hover .mf-link, body.light-mode .mf-right:hover .mf-link { color: rgba(0,0,0,0.75); text-decoration: underline; }
     body.light-mode .mf-center:hover { color: rgba(0,0,0,0.90); }
 
 
@@ -1005,6 +1013,7 @@
       background: rgba(255,255,255,0.05);
       border-radius: 12px;
       padding: 4px;
+      flex-shrink: 0;
     }
     body.light-mode .modal-tabs { background: rgba(0,0,0,0.06); }
     .modal-tab {
@@ -1031,6 +1040,16 @@
       background: rgba(0,0,0,0.10);
       color: #111;
     }
+    .tab-content-wrap {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      margin-bottom: 16px;
+    }
+    .tab-content-wrap::-webkit-scrollbar { width: 4px; }
+    .tab-content-wrap::-webkit-scrollbar-track { background: transparent; }
+    .tab-content-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+    body.light-mode .tab-content-wrap::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -1407,6 +1426,9 @@
       <button class="modal-tab" data-tab="sound">Sound</button>
       <button class="modal-tab" data-tab="radio">Radio</button>
     </div>
+
+    <!-- Tab content wrapper -->
+    <div class="tab-content-wrap">
 
     <!-- ── TAB: General ── -->
     <div class="tab-panel active" id="tab-general">
@@ -1802,11 +1824,13 @@
       </div>
     </div>
 
+    </div><!-- /tab-content-wrap -->
+
     <!-- ── Footer ── -->
     <div class="modal-footer">
-      <a class="mf-left" href="https://euphorya.co" target="_blank" rel="noopener">Powered by Euphorya</a>
+      <a class="mf-left" href="https://euphorya.co" target="_blank" rel="noopener">Powered by <span class="mf-link">Euphorya</span></a>
       <a class="mf-center" href="https://flapclock.com" target="_blank" rel="noopener">FlapClock.com © <span id="footer-year">2026</span></a>
-      <a class="mf-right" href="https://fajarsiddiq.com" target="_blank" rel="noopener">Made by Fajar Siddiq</a>
+      <a class="mf-right" href="https://fajarsiddiq.com" target="_blank" rel="noopener">Made by <span class="mf-link">Fajar Siddiq</span></a>
     </div>
 
   </div>
@@ -2394,6 +2418,7 @@
       btn.classList.add('active');
       document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
       if (btn.dataset.tab === 'calendar') renderCalendar();
+      playClick();
     });
   });
 
