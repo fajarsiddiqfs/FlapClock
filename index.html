@@ -811,7 +811,6 @@
       color: rgba(0,0,0,0.50);
     }
     /* Per-brand hover colours */
-    .share-icon-btn.sib-ig:hover    { background: rgba(225,48,108,0.15); color: #e1306c; }
     .share-icon-btn.sib-x:hover     { background: rgba(0,0,0,0.15); color: #fff; }
     .share-icon-btn.sib-fb:hover    { background: rgba(24,119,242,0.15); color: #1877f2; }
     .share-icon-btn.sib-th:hover    { background: rgba(0,0,0,0.15); color: #fff; }
@@ -1417,10 +1416,6 @@
     <div class="modal-share-standalone">
       <span class="modal-share-label">Share</span>
       <div class="share-icons">
-        <!-- Instagram Stories -->
-        <a class="share-icon-btn sib-ig" id="share-ig" href="#" title="Share on Instagram Stories">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-        </a>
         <!-- X / Twitter -->
         <a class="share-icon-btn sib-x" id="share-twitter" href="#" target="_blank" rel="noopener" title="Share on X">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.845L1.254 2.25H8.08l4.258 5.63 5.906-5.63Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -2283,17 +2278,20 @@
   const SYNTHS = {
 
     rain(ctx, dest) {
-      // White noise → lowpass (rain body) + highpass blend (drizzle spray)
-      const body  = makeNoise(ctx, 3);
-      const spray = makeNoise(ctx, 2);
-      const lpf   = biquad(ctx, 'lowpass',  1800);
-      const hpf   = biquad(ctx, 'highpass', 3500);
-      const gBody = gain(ctx, 0.55);
-      const gSpray= gain(ctx, 0.25);
-      body.connect(lpf);  lpf.connect(gBody);  gBody.connect(dest);
-      spray.connect(hpf); hpf.connect(gSpray); gSpray.connect(dest);
-      body.start(); spray.start();
-      return [body, spray, lpf, hpf, gBody, gSpray];
+      // Very soft rain: heavily low-passed noise, gentle swell LFO
+      const body  = makeNoise(ctx, 4);
+      const lpf   = biquad(ctx, 'lowpass', 900);
+      const lpf2  = biquad(ctx, 'lowpass', 600);
+      const gBody = gain(ctx, 0.45);
+      const lfo   = ctx.createOscillator();
+      const lfoG  = ctx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.06;
+      lfoG.gain.value = 0.12;
+      lfo.connect(lfoG); lfoG.connect(gBody.gain);
+      body.connect(lpf); lpf.connect(lpf2); lpf2.connect(gBody); gBody.connect(dest);
+      body.start(); lfo.start();
+      return [body, lpf, lpf2, gBody, lfo, lfoG];
     },
 
     ocean(ctx, dest) {
@@ -2314,126 +2312,153 @@
     },
 
     forest(ctx, dest) {
-      // Layered bandpass noise (wind rustle) + sparse bird-like chirps via LFO
-      const wind  = makeNoise(ctx, 3);
-      const bpf   = biquad(ctx, 'bandpass', 700, 0.6);
-      const gWind = gain(ctx, 0.45);
-      wind.connect(bpf); bpf.connect(gWind); gWind.connect(dest);
-      wind.start();
-      // Soft high-frequency shimmer for leaves
-      const shimmer = makeNoise(ctx, 2);
-      const hpf     = biquad(ctx, 'highpass', 4000);
-      const gShim   = gain(ctx, 0.08);
-      shimmer.connect(hpf); hpf.connect(gShim); gShim.connect(dest);
-      shimmer.start();
-      return [wind, bpf, gWind, shimmer, hpf, gShim];
-    },
-
-    fire(ctx, dest) {
-      // Low rumble + crackle impulses via LFO-gated noise
-      const base  = makeNoise(ctx, 2);
-      const lpf   = biquad(ctx, 'lowpass', 400);
-      const gBase = gain(ctx, 0.6);
-      base.connect(lpf); lpf.connect(gBase); gBase.connect(dest);
-      base.start();
-      // Mid crackle
-      const crk  = makeNoise(ctx, 1);
-      const bpf  = biquad(ctx, 'bandpass', 1200, 3);
-      const gCrk = gain(ctx, 0.3);
-      const lfo  = ctx.createOscillator();
-      const lfoG = ctx.createGain();
-      lfo.type = 'sawtooth';
-      lfo.frequency.value = 1.7;
-      lfoG.gain.value = 0.4;
-      lfo.connect(lfoG); lfoG.connect(gCrk.gain);
-      crk.connect(bpf); bpf.connect(gCrk); gCrk.connect(dest);
-      crk.start(); lfo.start();
-      return [base, lpf, gBase, crk, bpf, gCrk, lfo, lfoG];
-    },
-
-    stream(ctx, dest) {
-      // Higher-pitched bandpass noise with fast LFO (babbling brook)
-      const noise = makeNoise(ctx, 2);
-      const bpf   = biquad(ctx, 'bandpass', 1400, 0.8);
-      const gNode = gain(ctx, 0.65);
+      // Very gentle wind through leaves: slow LFO modulation, low-mid bandpass
+      const wind  = makeNoise(ctx, 4);
+      const lpf   = biquad(ctx, 'lowpass', 1200);
+      const bpf   = biquad(ctx, 'bandpass', 500, 0.4);
+      const gWind = gain(ctx, 0.38);
       const lfo   = ctx.createOscillator();
       const lfoG  = ctx.createGain();
       lfo.type = 'sine';
-      lfo.frequency.value = 2.5;
-      lfoG.gain.value = 0.3;
+      lfo.frequency.value = 0.08;
+      lfoG.gain.value = 0.15;
+      lfo.connect(lfoG); lfoG.connect(gWind.gain);
+      wind.connect(lpf); lpf.connect(bpf); bpf.connect(gWind); gWind.connect(dest);
+      wind.start(); lfo.start();
+      // Very faint leaf shimmer, barely audible
+      const shimmer = makeNoise(ctx, 2);
+      const hpf     = biquad(ctx, 'highpass', 5000);
+      const gShim   = gain(ctx, 0.03);
+      shimmer.connect(hpf); hpf.connect(gShim); gShim.connect(dest);
+      shimmer.start();
+      return [wind, lpf, bpf, gWind, lfo, lfoG, shimmer, hpf, gShim];
+    },
+
+    fire(ctx, dest) {
+      // Soft hearth fire: warm low rumble with slow breathing LFO, very gentle crackle
+      const base  = makeNoise(ctx, 3);
+      const lpf   = biquad(ctx, 'lowpass', 300);
+      const lpf2  = biquad(ctx, 'lowpass', 200);
+      const gBase = gain(ctx, 0.5);
+      const lfo   = ctx.createOscillator();
+      const lfoG  = ctx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.1;
+      lfoG.gain.value = 0.12;
+      lfo.connect(lfoG); lfoG.connect(gBase.gain);
+      base.connect(lpf); lpf.connect(lpf2); lpf2.connect(gBase); gBase.connect(dest);
+      base.start(); lfo.start();
+      // Very soft mid warmth layer
+      const mid  = makeNoise(ctx, 1.5);
+      const bpf  = biquad(ctx, 'bandpass', 600, 1.5);
+      const gMid = gain(ctx, 0.12);
+      mid.connect(bpf); bpf.connect(gMid); gMid.connect(dest);
+      mid.start();
+      return [base, lpf, lpf2, gBase, lfo, lfoG, mid, bpf, gMid];
+    },
+
+    stream(ctx, dest) {
+      // Calm shallow stream: mid-low bandpass, slow gentle LFO
+      const noise = makeNoise(ctx, 3);
+      const lpf   = biquad(ctx, 'lowpass', 1000);
+      const bpf   = biquad(ctx, 'bandpass', 700, 0.6);
+      const gNode = gain(ctx, 0.5);
+      const lfo   = ctx.createOscillator();
+      const lfoG  = ctx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.7;
+      lfoG.gain.value = 0.18;
       lfo.connect(lfoG); lfoG.connect(gNode.gain);
-      noise.connect(bpf); bpf.connect(gNode); gNode.connect(dest);
+      noise.connect(lpf); lpf.connect(bpf); bpf.connect(gNode); gNode.connect(dest);
       noise.start(); lfo.start();
-      // Add a second layer at higher freq
-      const noise2 = makeNoise(ctx, 1.5);
-      const bpf2   = biquad(ctx, 'bandpass', 2800, 1.2);
-      const g2     = gain(ctx, 0.25);
+      // Very soft second layer for gentle shimmer
+      const noise2 = makeNoise(ctx, 2);
+      const bpf2   = biquad(ctx, 'bandpass', 1400, 0.8);
+      const g2     = gain(ctx, 0.12);
       noise2.connect(bpf2); bpf2.connect(g2); g2.connect(dest);
       noise2.start();
-      return [noise, bpf, gNode, lfo, lfoG, noise2, bpf2, g2];
+      return [noise, lpf, bpf, gNode, lfo, lfoG, noise2, bpf2, g2];
     },
 
     crickets(ctx, dest) {
-      // Two detuned high-freq oscillators + gentle amplitude modulation
-      const makeChirp = (freq, lfoFreq) => {
+      // Soft night crickets: very low volume, lower freq, slow AM — barely a murmur
+      const makeChirp = (freq, lfoFreq, vol) => {
         const osc  = ctx.createOscillator();
         const lfo  = ctx.createOscillator();
         const lfoG = ctx.createGain();
-        const gOsc = gain(ctx, 0.12);
+        const gOsc = gain(ctx, vol);
         osc.type = 'sine';
         osc.frequency.value = freq;
         lfo.type = 'sine';
         lfo.frequency.value = lfoFreq;
-        lfoG.gain.value = 0.1;
+        lfoG.gain.value = vol * 0.6;
         lfo.connect(lfoG); lfoG.connect(gOsc.gain);
         osc.connect(gOsc); gOsc.connect(dest);
         osc.start(); lfo.start();
         return [osc, lfo, lfoG, gOsc];
       };
-      const a = makeChirp(4200, 18);
-      const b = makeChirp(4800, 22);
-      const c = makeChirp(3600, 14);
-      return [...a, ...b, ...c];
+      // Blend with soft low noise bed for warmth
+      const bed   = makeNoise(ctx, 3);
+      const lpf   = biquad(ctx, 'lowpass', 400);
+      const gBed  = gain(ctx, 0.08);
+      bed.connect(lpf); lpf.connect(gBed); gBed.connect(dest);
+      bed.start();
+      const a = makeChirp(3200, 8,  0.05);
+      const b = makeChirp(3700, 10, 0.04);
+      const c = makeChirp(2800, 6,  0.04);
+      return [bed, lpf, gBed, ...a, ...b, ...c];
     },
 
     zen(ctx, dest) {
-      // Singing bowl: decaying sine at ~432 Hz with subtle chorus
+      // Singing bowl: very soft, slow strike, long 12 s decay, spacious 18 s interval
       const scheduleBowl = () => {
         const now = ctx.currentTime;
+        // Fundamental ~396 Hz (lower, warmer)
         const osc = ctx.createOscillator();
         const env = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.value = 432;
+        osc.frequency.value = 396;
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.45, now + 0.12);
-        env.gain.exponentialRampToValueAtTime(0.0001, now + 6.0);
+        env.gain.linearRampToValueAtTime(0.28, now + 0.25);
+        env.gain.exponentialRampToValueAtTime(0.0001, now + 12.0);
         osc.connect(env); env.connect(dest);
-        osc.start(now); osc.stop(now + 6.5);
-        // Second partial (overtone)
+        osc.start(now); osc.stop(now + 12.5);
+        // Soft overtone
         const osc2 = ctx.createOscillator();
         const env2 = ctx.createGain();
         osc2.type = 'sine';
-        osc2.frequency.value = 864;
+        osc2.frequency.value = 792;
         env2.gain.setValueAtTime(0.001, now);
-        env2.gain.linearRampToValueAtTime(0.12, now + 0.12);
-        env2.gain.exponentialRampToValueAtTime(0.0001, now + 4.0);
+        env2.gain.linearRampToValueAtTime(0.07, now + 0.25);
+        env2.gain.exponentialRampToValueAtTime(0.0001, now + 8.0);
         osc2.connect(env2); env2.connect(dest);
-        osc2.start(now); osc2.stop(now + 4.5);
+        osc2.start(now); osc2.stop(now + 8.5);
+        // Very faint third harmonic
+        const osc3 = ctx.createOscillator();
+        const env3 = ctx.createGain();
+        osc3.type = 'sine';
+        osc3.frequency.value = 1188;
+        env3.gain.setValueAtTime(0.001, now);
+        env3.gain.linearRampToValueAtTime(0.025, now + 0.25);
+        env3.gain.exponentialRampToValueAtTime(0.0001, now + 5.0);
+        osc3.connect(env3); env3.connect(dest);
+        osc3.start(now); osc3.stop(now + 5.5);
       };
       scheduleBowl();
-      const interval = setInterval(scheduleBowl, 7000);
-      // Return a pseudo-node with disconnect that clears interval
+      const interval = setInterval(scheduleBowl, 18000);
       const fake = { _interval: interval, disconnect() { clearInterval(this._interval); } };
       return [fake];
     },
 
     whitenoise(ctx, dest) {
+      // Soft pink-ish noise: two cascaded lowpass filters to roll off harshness
       const noise = makeNoise(ctx, 4);
-      const lpf   = biquad(ctx, 'lowpass', 8000);
-      const gNode = gain(ctx, 0.55);
-      noise.connect(lpf); lpf.connect(gNode); gNode.connect(dest);
+      const lpf   = biquad(ctx, 'lowpass', 3000);
+      const lpf2  = biquad(ctx, 'lowpass', 1800);
+      const gNode = gain(ctx, 0.42);
+      noise.connect(lpf); lpf.connect(lpf2); lpf2.connect(gNode); gNode.connect(dest);
       noise.start();
-      return [noise, lpf, gNode];
+      return [noise, lpf, lpf2, gNode];
     }
   };
 
@@ -2550,7 +2575,7 @@
   ══════════════════════════════════════════════════════ */
   (function() {
     const siteUrl  = 'https://flapclock.com';
-    const shareMsg = 'Check out Flap Clock — a beautiful fullscreen flip clock for desktop & mobile 🕰️';
+    const shareMsg = 'Flap Clock – Clean Fullscreen Digital Clock for Desktop & Mobile\nhttps://flapclock.com';
     const shareEnc = encodeURIComponent(shareMsg);
     const urlEnc   = encodeURIComponent(siteUrl);
 
@@ -2573,41 +2598,6 @@
     // Telegram
     const tg = document.getElementById('share-telegram');
     if (tg) tg.href = 'https://t.me/share/url?url=' + urlEnc + '&text=' + shareEnc;
-
-    // Instagram Stories — no direct web URL; open Instagram and show a toast
-    const ig = document.getElementById('share-ig');
-    if (ig) {
-      ig.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Try native share sheet on mobile (ideal for IG Stories)
-        if (navigator.share) {
-          navigator.share({ title: 'Flap Clock', text: shareMsg, url: siteUrl }).catch(() => {});
-        } else {
-          // Desktop fallback: copy link and prompt user
-          navigator.clipboard && navigator.clipboard.writeText(siteUrl).catch(() => {});
-          showIgToast();
-        }
-      });
-    }
-
-    function showIgToast() {
-      const old = document.getElementById('ig-share-toast');
-      if (old) old.remove();
-      const t = document.createElement('div');
-      t.id = 'ig-share-toast';
-      t.textContent = '📋 Link copied! Open Instagram › Stories › Link sticker';
-      t.style.cssText = [
-        'position:fixed','bottom:80px','left:50%','transform:translateX(-50%)',
-        'background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045)',
-        'color:#fff','font-family:Inter,sans-serif','font-size:12px','font-weight:600',
-        'padding:10px 18px','border-radius:22px','z-index:9999',
-        'pointer-events:none','opacity:1','transition:opacity 0.4s ease',
-        'white-space:nowrap','box-shadow:0 4px 20px rgba(0,0,0,0.35)'
-      ].join(';');
-      document.body.appendChild(t);
-      setTimeout(() => { t.style.opacity = '0'; }, 3000);
-      setTimeout(() => { if (t.parentNode) t.remove(); }, 3600);
-    }
 
     // Copy Link
     const cp = document.getElementById('share-copy');
