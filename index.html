@@ -3998,7 +3998,7 @@
 
   @media (max-width: 480px) and (orientation: portrait) {
     .sk-label {
-      font-size: 21px;
+      font-size: 22px;
     }
   }
 </style>
@@ -4114,111 +4114,160 @@
     var vh = window.innerHeight;
     var isMobPort = vw <= 480 && vh > vw;
 
-    /* stroke & head scale for mobile */
-    var sw   = isMobPort ? '2'  : '2';
-    var hLen = isMobPort ? 8    : 9;
-
-    /* ── 1. AM/PM "Click Me!" ───────────────────────────
-       Icon: top-left (~left:18px, top:~34% of vh)
-       Label: place below the badge, pointing up-left to it  */
-    var ampmShift = isMobPort ? 0 : 20;
-    var ampmLX, ampmLY;
     if (isMobPort) {
-      /* label sits to the right of badge, same row */
-      ampmLX = Math.min(ac.x + 55, vw - 10);
-      ampmLY = ac.y + 10;
-    } else {
-      ampmLX = Math.min(ac.x + 140 + ampmShift, vw - 8);
-      ampmLY = Math.max(ac.y - 40, 14);
-    }
-    drawHint(
-      document.getElementById('hint-ampm'),
-      ac.x + ampmShift, ac.y,
-      ampmLX, ampmLY,
-      'Click Me!',
-      'end'
-    );
+      /* ═══════════════════════════════════════════════════
+         iPhone PORTRAIT — precise positions per icon
+         Icons on a ~390×844 viewport (iPhone 14):
+           AM/PM  → top-left  ~(26, vh*0.34)
+           Gear   → top-right ~(vw-26, 28)
+           Fs     → bot-right ~(vw-26, vh-34)
+         Labels placed in clear open space, arrows short & visible.
+      ══════════════════════════════════════════════════════ */
 
-    /* ── 2. Settings gear ───────────────────────────────
-       Icon: top-right (~right:12px, top:14px)
-       Label: below and to the left of gear, arrow curves up to it */
-    (function () {
-      var g2  = document.getElementById('hint-settings');
-      g2.innerHTML = '';
-      var col = inkColor();
-      var NS2 = 'http://www.w3.org/2000/svg';
+      /* 1. "Click Me!" — AM/PM badge is top-left
+            Label: below the badge, nudged right so arrow curves up-left */
+      drawHint(
+        document.getElementById('hint-ampm'),
+        ac.x, ac.y,
+        ac.x + 70, ac.y + 55,
+        'Click Me!',
+        'start'
+      );
 
-      var lx, ly;
-      if (isMobPort) {
-        /* label sits left of centre, below the gear */
-        lx = Math.max(sc.x - 80, 12);
-        ly = sc.y + 44;
-      } else {
-        lx = Math.max(sc.x - 60, 12);
-        ly = sc.y + 35;
-      }
+      /* 2. "Settings" — gear is top-right corner
+            Label: below-left of gear, arrow curves up-right to it */
+      (function () {
+        var g2  = document.getElementById('hint-settings');
+        g2.innerHTML = '';
+        var col = inkColor();
+        var NS2 = 'http://www.w3.org/2000/svg';
 
-      var sx = lx,        sy = ly - 10;
-      var ex = sc.x - 14, ey = sc.y;
-      var cx = sx + (ex - sx) * 0.5;
-      var cy = ((sy + ey) / 2) - 12;
+        /* label anchor point */
+        var lx = sc.x - 95;
+        var ly = sc.y + 50;
 
-      var p = document.createElementNS(NS2, 'path');
-      p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
-      p.setAttribute('fill', 'none');
-      p.setAttribute('stroke', col);
-      p.setAttribute('stroke-width', sw);
-      p.setAttribute('stroke-linecap', 'round');
-      g2.appendChild(p);
+        /* arrow: tail near label, tip near gear */
+        var sx = lx + 60, sy = ly - 8;
+        var ex = sc.x - 12, ey = sc.y + 8;
+        var cx = (sx + ex) / 2 + 10;
+        var cy = (sy + ey) / 2 - 18;
 
-      var ang = Math.atan2(ey - cy, ex - cx);
-      [ang - 0.45, ang + 0.45].forEach(function (a) {
-        var ln = document.createElementNS(NS2, 'line');
-        ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
-        ln.setAttribute('x2', ex - hLen * Math.cos(a));
-        ln.setAttribute('y2', ey - hLen * Math.sin(a));
-        ln.setAttribute('stroke', col);
-        ln.setAttribute('stroke-width', sw);
-        ln.setAttribute('stroke-linecap', 'round');
-        g2.appendChild(ln);
-      });
+        var p = document.createElementNS(NS2, 'path');
+        p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', col);
+        p.setAttribute('stroke-width', '2');
+        p.setAttribute('stroke-linecap', 'round');
+        g2.appendChild(p);
 
-      var t = document.createElementNS(NS2, 'text');
-      if (isMobPort) {
-        t.setAttribute('x', lx); t.setAttribute('y', ly + 18);
+        var headLen = 8;
+        var ang = Math.atan2(ey - cy, ex - cx);
+        [ang - 0.45, ang + 0.45].forEach(function (a) {
+          var ln = document.createElementNS(NS2, 'line');
+          ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
+          ln.setAttribute('x2', ex - headLen * Math.cos(a));
+          ln.setAttribute('y2', ey - headLen * Math.sin(a));
+          ln.setAttribute('stroke', col);
+          ln.setAttribute('stroke-width', '2');
+          ln.setAttribute('stroke-linecap', 'round');
+          g2.appendChild(ln);
+        });
+
+        var t = document.createElementNS(NS2, 'text');
+        t.setAttribute('x', lx);
+        t.setAttribute('y', ly + 22);
         t.setAttribute('text-anchor', 'start');
-      } else {
+        t.setAttribute('class', 'sk-label');
+        t.setAttribute('fill', col);
+        t.textContent = 'Settings';
+        g2.appendChild(t);
+      }());
+
+      /* 3. "Full Screen" — fs btn is bottom-right corner
+            Label: above-left of button, arrow curves down-right to it */
+      drawHint(
+        document.getElementById('hint-fullscreen'),
+        fc.x, fc.y,
+        fc.x - 110, fc.y - 55,
+        'Full Screen',
+        'end'
+      );
+
+    } else {
+      /* ═══════════════════════════════════════════════════
+         DESKTOP / TABLET — original behaviour
+      ══════════════════════════════════════════════════════ */
+
+      /* 1. AM/PM */
+      var ampmShift = 20;
+      var ampmLX = Math.min(ac.x + 140 + ampmShift, vw - 8);
+      var ampmLY = Math.max(ac.y - 40, 14);
+      drawHint(
+        document.getElementById('hint-ampm'),
+        ac.x + ampmShift, ac.y,
+        ampmLX, ampmLY,
+        'Click Me!',
+        'end'
+      );
+
+      /* 2. Settings */
+      (function () {
+        var g2  = document.getElementById('hint-settings');
+        g2.innerHTML = '';
+        var col = inkColor();
+        var NS2 = 'http://www.w3.org/2000/svg';
+
+        var lx = Math.max(sc.x - 60, 12);
+        var ly = sc.y + 35;
+        var sx = lx,        sy = ly - 10;
+        var ex = sc.x - 14, ey = sc.y;
+        var cx = sx + (ex - sx) * 0.5;
+        var cy = ((sy + ey) / 2) - 12;
+
+        var p = document.createElementNS(NS2, 'path');
+        p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', col);
+        p.setAttribute('stroke-width', '2');
+        p.setAttribute('stroke-linecap', 'round');
+        g2.appendChild(p);
+
+        var headLen = 9;
+        var ang = Math.atan2(ey - cy, ex - cx);
+        [ang - 0.45, ang + 0.45].forEach(function (a) {
+          var ln = document.createElementNS(NS2, 'line');
+          ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
+          ln.setAttribute('x2', ex - headLen * Math.cos(a));
+          ln.setAttribute('y2', ey - headLen * Math.sin(a));
+          ln.setAttribute('stroke', col);
+          ln.setAttribute('stroke-width', '2');
+          ln.setAttribute('stroke-linecap', 'round');
+          g2.appendChild(ln);
+        });
+
+        var t = document.createElementNS(NS2, 'text');
         t.setAttribute('x', lx - 50); t.setAttribute('y', ly + 20);
         t.setAttribute('text-anchor', 'start');
-      }
-      t.setAttribute('class', 'sk-label');
-      t.setAttribute('fill', col);
-      t.textContent = 'Settings';
-      g2.appendChild(t);
-    }());
+        t.setAttribute('class', 'sk-label');
+        t.setAttribute('fill', col);
+        t.textContent = 'Settings';
+        g2.appendChild(t);
+      }());
 
-    /* ── 3. Fullscreen ──────────────────────────────────
-       Icon: bottom-right (~right:12px, bottom:20px)
-       Label: to the left of the icon, arrow curves right to it */
-    var fsLX, fsLY;
-    if (isMobPort) {
-      /* label sits clearly to the left, same vertical band */
-      fsLX = Math.max(fc.x - 100, 10);
-      fsLY = fc.y - 30;
-    } else {
-      fsLX = Math.max(fc.x - 165, 10);
-      fsLY = fc.y - 60;
+      /* 3. Fullscreen */
+      var fsLX = Math.max(fc.x - 165, 10);
+      var fsLY = fc.y - 60;
+      var fsDx = fc.x - fsLX, fsDy = fc.y - fsLY;
+      var fsDist = Math.sqrt(fsDx*fsDx + fsDy*fsDy);
+      var fsShortenBy = 18;
+      drawHint(
+        document.getElementById('hint-fullscreen'),
+        fc.x - (fsDx/fsDist)*fsShortenBy, fc.y - (fsDy/fsDist)*fsShortenBy,
+        fsLX, fsLY,
+        'Full Screen',
+        'start'
+      );
     }
-    var fsDx = fc.x - fsLX, fsDy = fc.y - fsLY;
-    var fsDist = Math.sqrt(fsDx*fsDx + fsDy*fsDy);
-    var fsShortenBy = isMobPort ? 14 : 18;
-    drawHint(
-      document.getElementById('hint-fullscreen'),
-      fc.x - (fsDx/fsDist)*fsShortenBy, fc.y - (fsDy/fsDist)*fsShortenBy,
-      fsLX, fsLY,
-      'Full Screen',
-      'start'
-    );
   }
 
   /* Run on load + resize */
