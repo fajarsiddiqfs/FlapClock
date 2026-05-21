@@ -4113,6 +4113,7 @@
     var vw = window.innerWidth;
     var vh = window.innerHeight;
     var isMobPort = vw <= 480 && vh > vw;
+    var isMobLand  = vh <= 480 && vw > vh;  /* iPhone landscape */
 
     if (isMobPort) {
       /* ═══════════════════════════════════════════════════
@@ -4183,6 +4184,78 @@
       }());
 
       /* 3. "Full Screen" — text sits ABOVE, arrow curves down-right to icon */
+      drawHint(
+        document.getElementById('hint-fullscreen'),
+        fc.x, fc.y,
+        fc.x - 85, fc.y - 70,
+        'Full Screen',
+        'middle',
+        28
+      );
+
+    } else if (isMobLand) {
+      /* ═══════════════════════════════════════════════════
+         iPhone LANDSCAPE — same relative style as portrait,
+         positions calculated from live element centres so
+         they follow the clock no matter the screen width.
+      ══════════════════════════════════════════════════════ */
+
+      /* 1. "Click Me!" — label above-right of AM/PM badge */
+      drawHint(
+        document.getElementById('hint-ampm'),
+        ac.x, ac.y,
+        ac.x + 18, ac.y - 55,
+        'Click Me!',
+        'start'
+      );
+
+      /* 2. "Settings" — label left of gear, arrow right to gear */
+      (function () {
+        var g2  = document.getElementById('hint-settings');
+        g2.innerHTML = '';
+        var col = inkColor();
+        var NS2 = 'http://www.w3.org/2000/svg';
+
+        var lx = sc.x - 130;
+        var ly = sc.y - 12;
+
+        var sx = lx + 82, sy = ly + 12;
+        var ex = sc.x - 14, ey = sc.y;
+        var cx = (sx + ex) / 2;
+        var cy = (sy + ey) / 2 - 10;
+
+        var p = document.createElementNS(NS2, 'path');
+        p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', col);
+        p.setAttribute('stroke-width', '2');
+        p.setAttribute('stroke-linecap', 'round');
+        g2.appendChild(p);
+
+        var headLen = 8;
+        var ang = Math.atan2(ey - cy, ex - cx);
+        [ang - 0.45, ang + 0.45].forEach(function (a) {
+          var ln = document.createElementNS(NS2, 'line');
+          ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
+          ln.setAttribute('x2', ex - headLen * Math.cos(a));
+          ln.setAttribute('y2', ey - headLen * Math.sin(a));
+          ln.setAttribute('stroke', col);
+          ln.setAttribute('stroke-width', '2');
+          ln.setAttribute('stroke-linecap', 'round');
+          g2.appendChild(ln);
+        });
+
+        var t = document.createElementNS(NS2, 'text');
+        t.setAttribute('x', lx);
+        t.setAttribute('y', ly + 18);
+        t.setAttribute('text-anchor', 'start');
+        t.setAttribute('class', 'sk-label');
+        t.setAttribute('fill', col);
+        t.textContent = 'Settings';
+        g2.appendChild(t);
+      }());
+
+      /* 3. "Full Screen" — label above-left, arrow curves to icon */
       drawHint(
         document.getElementById('hint-fullscreen'),
         fc.x, fc.y,
@@ -4272,6 +4345,8 @@
   /* Run on load + resize */
   window.addEventListener('load', positionAll);
   window.addEventListener('resize', positionAll);
+  /* iOS rotation: viewport dims settle slightly after the event fires */
+  window.addEventListener('orientationchange', function () { setTimeout(positionAll, 300); });
   /* Also run after a short tick to let layout settle */
   setTimeout(positionAll, 150);
 
