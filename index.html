@@ -3948,9 +3948,9 @@
     var dist = Math.sqrt(dx*dx + dy*dy);
     var nx = dx/dist, ny = dy/dist;
 
-    var tailGap = 22;
+    var tailGap = 28;
     var sx = lx + nx * tailGap;
-    var sy = ly + ny * tailGap + 14;
+    var sy = ly + ny * tailGap;
 
     var tipGap = 42;
     var ex = tx - nx * tipGap;
@@ -4015,9 +4015,9 @@
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
-    /* 1. AM/PM: label far right + well above — push label away so arrow is short but has room */
-    var ampmLX = Math.min(ac.x + 190, vw - 8);
-    var ampmLY = Math.max(ac.y - 55, 14);
+    /* 1. AM/PM: label to the right + above */
+    var ampmLX = Math.min(ac.x + 130, vw - 8);
+    var ampmLY = Math.max(ac.y - 40, 14);
     drawHint(
       document.getElementById('hint-ampm'),
       ac.x, ac.y,
@@ -4026,27 +4026,26 @@
       'end'
     );
 
-    /* 2. Settings: label stays in the top-right corner zone — below the gear, not inward */
-    /* Clamp X to never go left of (vw - 140) so it stays in the right edge area */
-    var settLX = Math.max(sc.x - 20, vw - 140);
-    var settLY = sc.y + 68;
+    /* 2. Settings: label below-left of gear, arrow points up-right to gear */
+    var settLX = Math.max(sc.x - 130, 10);
+    var settLY = sc.y + 40;
     drawHint(
       document.getElementById('hint-settings'),
       sc.x, sc.y,
       settLX, settLY,
       'Settings',
-      'middle'
+      'start'
     );
 
-    /* 3. Fullscreen: label stays in bottom-right corner zone — above the icon, not inward */
-    var fsLX = Math.max(fc.x - 20, vw - 140);
-    var fsLY = fc.y - 68;
+    /* 3. Fullscreen: label to the left + above the icon (arrow points down-right to icon) */
+    var fsLX = Math.max(fc.x - 130, 10);
+    var fsLY = fc.y - 40;
     drawHint(
       document.getElementById('hint-fullscreen'),
       fc.x, fc.y,
       fsLX, fsLY,
       'Full Screen',
-      'middle'
+      'start'
     );
   }
 
