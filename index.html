@@ -4342,13 +4342,13 @@
          they follow the clock no matter the screen width.
       ══════════════════════════════════════════════════════ */
 
-      /* 1. "Click Me!" — label beside/below AM/PM badge (landscape has very
-            little vertical headroom above, so place label to the right and
-            slightly below the badge so it always stays on-screen) */
+      /* 1. "Click Me!" — label sits below-right of AM/PM badge so it is
+            always on-screen in landscape (badge is top-left, very little
+            space above it).  Arrow tip points back up-left to the badge. */
       drawHint(
         document.getElementById('hint-ampm'),
         ac.x, ac.y,
-        ac.x + 70, ac.y + 30,
+        ac.x + 80, ac.y + 52,
         'Click Me!',
         'start'
       );
