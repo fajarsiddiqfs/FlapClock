@@ -4113,6 +4113,8 @@
     var vw = window.innerWidth;
     var vh = window.innerHeight;
     var isMobPort = vw <= 480 && vh > vw;
+    /* iPhone landscape: wide but short (e.g. 667–932px wide, under 480px tall) */
+    var isMobLand = vh <= 480 && vw > vh;
 
     if (isMobPort) {
       /* ═══════════════════════════════════════════════════
@@ -4190,6 +4192,78 @@
         'Full Screen',
         'middle',
         28
+      );
+
+    } else if (isMobLand) {
+      /* ═══════════════════════════════════════════════════
+         iPhone LANDSCAPE — icons are in the same corners as
+         desktop but the viewport is small, so offsets are
+         tightened to match actual element positions.
+      ══════════════════════════════════════════════════════ */
+
+      /* 1. "Click Me!" — label above-right of AM/PM badge */
+      drawHint(
+        document.getElementById('hint-ampm'),
+        ac.x, ac.y,
+        ac.x + 18, ac.y - 48,
+        'Click Me!',
+        'start'
+      );
+
+      /* 2. "Settings" — label to the left of gear, same row */
+      (function () {
+        var g2  = document.getElementById('hint-settings');
+        g2.innerHTML = '';
+        var col = inkColor();
+        var NS2 = 'http://www.w3.org/2000/svg';
+
+        var lx = sc.x - 120;
+        var ly = sc.y - 12;
+
+        var sx = lx + 72, sy = ly + 12;
+        var ex = sc.x - 14, ey = sc.y;
+        var cx = (sx + ex) / 2;
+        var cy = (sy + ey) / 2 - 8;
+
+        var p = document.createElementNS(NS2, 'path');
+        p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', col);
+        p.setAttribute('stroke-width', '2');
+        p.setAttribute('stroke-linecap', 'round');
+        g2.appendChild(p);
+
+        var headLen = 8;
+        var ang = Math.atan2(ey - cy, ex - cx);
+        [ang - 0.45, ang + 0.45].forEach(function (a) {
+          var ln = document.createElementNS(NS2, 'line');
+          ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
+          ln.setAttribute('x2', ex - headLen * Math.cos(a));
+          ln.setAttribute('y2', ey - headLen * Math.sin(a));
+          ln.setAttribute('stroke', col);
+          ln.setAttribute('stroke-width', '2');
+          ln.setAttribute('stroke-linecap', 'round');
+          g2.appendChild(ln);
+        });
+
+        var t = document.createElementNS(NS2, 'text');
+        t.setAttribute('x', lx);
+        t.setAttribute('y', ly + 18);
+        t.setAttribute('text-anchor', 'start');
+        t.setAttribute('class', 'sk-label');
+        t.setAttribute('fill', col);
+        t.textContent = 'Settings';
+        g2.appendChild(t);
+      }());
+
+      /* 3. "Full Screen" — label above-left of icon, arrow curves to icon */
+      drawHint(
+        document.getElementById('hint-fullscreen'),
+        fc.x, fc.y,
+        fc.x - 100, fc.y - 55,
+        'Full Screen',
+        'middle',
+        22
       );
 
     } else {
@@ -4272,6 +4346,8 @@
   /* Run on load + resize */
   window.addEventListener('load', positionAll);
   window.addEventListener('resize', positionAll);
+  /* Reposition on iOS orientation change — delay so viewport dims have settled */
+  window.addEventListener('orientationchange', function () { setTimeout(positionAll, 250); });
   /* Also run after a short tick to let layout settle */
   setTimeout(positionAll, 150);
 
