@@ -4088,9 +4088,12 @@
     /* 3. Fullscreen: label to the left + above the icon (arrow points down-right to icon) */
     var fsLX = Math.max(fc.x - 165, 10);
     var fsLY = fc.y - 60;
+    var fsDx = fc.x - fsLX, fsDy = fc.y - fsLY;
+    var fsDist = Math.sqrt(fsDx*fsDx + fsDy*fsDy);
+    var fsShortenBy = 18;
     drawHint(
       document.getElementById('hint-fullscreen'),
-      fc.x, fc.y,
+      fc.x - (fsDx/fsDist)*fsShortenBy, fc.y - (fsDy/fsDist)*fsShortenBy,
       fsLX, fsLY,
       'Full Screen',
       'start'
