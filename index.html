@@ -4116,41 +4116,39 @@
 
     if (isMobPort) {
       /* ═══════════════════════════════════════════════════
-         iPhone PORTRAIT — precise positions per icon
-         Icons on a ~390×844 viewport (iPhone 14):
-           AM/PM  → top-left  ~(26, vh*0.34)
-           Gear   → top-right ~(vw-26, 28)
-           Fs     → bot-right ~(vw-26, vh-34)
-         Labels placed in clear open space, arrows short & visible.
+         iPhone PORTRAIT — positions matched to screenshot:
+           "Click Me!" → top-left  (below & right of AM/PM badge)
+           "Settings"  → top-right (left of gear, same row)
+           "Fullscreen"→ bottom-right (left of fs btn, same row)
       ══════════════════════════════════════════════════════ */
 
-      /* 1. "Click Me!" — AM/PM badge is top-left
-            Label: below the badge, nudged right so arrow curves up-left */
+      /* 1. "Click Me!" — label sits below-right of AM/PM badge (top-left)
+            Matches screenshot: text starts just right of the badge area */
       drawHint(
         document.getElementById('hint-ampm'),
         ac.x, ac.y,
-        ac.x + 70, ac.y + 55,
+        ac.x + 12, ac.y + 48,
         'Click Me!',
         'start'
       );
 
-      /* 2. "Settings" — gear is top-right corner
-            Label: below-left of gear, arrow curves up-right to it */
+      /* 2. "Settings" — label sits to the LEFT of the gear icon, same row
+            Matches screenshot: text ends just before the gear (top-right) */
       (function () {
         var g2  = document.getElementById('hint-settings');
         g2.innerHTML = '';
         var col = inkColor();
         var NS2 = 'http://www.w3.org/2000/svg';
 
-        /* label anchor point */
-        var lx = sc.x - 95;
-        var ly = sc.y + 50;
+        /* label: to the left of gear, aligned vertically with it */
+        var lx = sc.x - 110;
+        var ly = sc.y - 10;
 
-        /* arrow: tail near label, tip near gear */
-        var sx = lx + 60, sy = ly - 8;
-        var ex = sc.x - 12, ey = sc.y + 8;
-        var cx = (sx + ex) / 2 + 10;
-        var cy = (sy + ey) / 2 - 18;
+        /* arrow tail from right edge of label, tip at gear */
+        var sx = lx + 85, sy = ly + 10;
+        var ex = sc.x - 14, ey = sc.y;
+        var cx = (sx + ex) / 2;
+        var cy = (sy + ey) / 2 - 8;
 
         var p = document.createElementNS(NS2, 'path');
         p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
@@ -4175,7 +4173,7 @@
 
         var t = document.createElementNS(NS2, 'text');
         t.setAttribute('x', lx);
-        t.setAttribute('y', ly + 22);
+        t.setAttribute('y', ly + 18);
         t.setAttribute('text-anchor', 'start');
         t.setAttribute('class', 'sk-label');
         t.setAttribute('fill', col);
@@ -4183,12 +4181,12 @@
         g2.appendChild(t);
       }());
 
-      /* 3. "Full Screen" — fs btn is bottom-right corner
-            Label: above-left of button, arrow curves down-right to it */
+      /* 3. "Full Screen" — label sits to the LEFT of fs button, same row
+            Matches screenshot: text ends just before the icon (bottom-right) */
       drawHint(
         document.getElementById('hint-fullscreen'),
         fc.x, fc.y,
-        fc.x - 110, fc.y - 55,
+        fc.x - 115, fc.y - 8,
         'Full Screen',
         'end'
       );
