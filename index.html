@@ -2817,27 +2817,70 @@
     tick();
   });
 
+  function closeModal() {
+    const modalEl = document.querySelector('.modal');
+    modalEl.style.transition = 'transform 0.3s ease';
+    modalEl.style.transform  = 'translateY(100%)';
+    setTimeout(() => {
+      settingsModal.classList.remove('open');
+      settingsBtn.classList.remove('active');
+      modalEl.style.transition = '';
+      modalEl.style.transform  = '';
+    }, 300);
+  }
+
   settingsBtn.addEventListener('click', () => {
     playClick();
     settingsModal.classList.add('open');
     settingsBtn.classList.add('active');
   });
-  modalClose.addEventListener('click', () => {
-    settingsModal.classList.remove('open');
-    settingsBtn.classList.remove('active');
-  });
+  modalClose.addEventListener('click', closeModal);
   settingsModal.addEventListener('click', e => {
-    if (e.target === settingsModal) {
-      settingsModal.classList.remove('open');
-      settingsBtn.classList.remove('active');
-    }
+    if (e.target === settingsModal) closeModal();
   });
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      settingsModal.classList.remove('open');
-      settingsBtn.classList.remove('active');
-    }
+    if (e.key === 'Escape') closeModal();
   });
+
+  /* ── Swipe-down to close (mobile) ───────────────────── */
+  (function () {
+    const modalEl   = document.querySelector('.modal');
+    let startY = 0, startX = 0, dragging = false;
+
+    modalEl.addEventListener('touchstart', function (e) {
+      /* Only start drag from the top 56px (header / handle area) */
+      const rect = modalEl.getBoundingClientRect();
+      const touchY = e.touches[0].clientY - rect.top;
+      if (touchY > 56) return;
+      startY   = e.touches[0].clientY;
+      startX   = e.touches[0].clientX;
+      dragging = true;
+      modalEl.style.transition = 'none';
+    }, { passive: true });
+
+    modalEl.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      const dy = e.touches[0].clientY - startY;
+      const dx = e.touches[0].clientX - startX;
+      /* Cancel if horizontal swipe */
+      if (Math.abs(dx) > Math.abs(dy)) { dragging = false; return; }
+      if (dy < 0) { modalEl.style.transform = ''; return; }
+      modalEl.style.transform = 'translateY(' + dy + 'px)';
+    }, { passive: true });
+
+    modalEl.addEventListener('touchend', function (e) {
+      if (!dragging) return;
+      dragging = false;
+      const dy = e.changedTouches[0].clientY - startY;
+      if (dy > 80) {
+        closeModal();
+      } else {
+        modalEl.style.transition = 'transform 0.25s ease';
+        modalEl.style.transform  = '';
+        setTimeout(() => { modalEl.style.transition = ''; }, 250);
+      }
+    }, { passive: true });
+  }());
 
   /* ══════════════════════════════════════════════════════
      EMBED TAB
