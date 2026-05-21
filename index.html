@@ -3802,12 +3802,40 @@
     }
   };
 
-  function stopSound() {
-    soundNodes.forEach(n => {
-      try { if (n.stop) n.stop(); } catch(e) {}
-      try { n.disconnect(); } catch(e) {}
-    });
+  function stopSound(fadeMs) {
+    var fade = (typeof fadeMs === 'number') ? fadeMs : 0;
+    var nodesToStop = soundNodes.slice();
     soundNodes = [];
+
+    if (fade > 0 && masterGain) {
+      // Fade out existing nodes gracefully
+      try {
+        var ctx = ensureCtx();
+        var now = ctx.currentTime;
+        masterGain.gain.cancelScheduledValues(now);
+        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
+        masterGain.gain.linearRampToValueAtTime(0, now + fade / 1000);
+        setTimeout(function() {
+          nodesToStop.forEach(function(n) {
+            try { if (n.stop) n.stop(); } catch(e) {}
+            try { n.disconnect(); } catch(e) {}
+          });
+          // Reset gain for next sound
+          try { masterGain.gain.cancelScheduledValues(0); masterGain.gain.value = getSoundVolume(); } catch(e) {}
+        }, fade + 50);
+      } catch(e) {
+        nodesToStop.forEach(function(n) {
+          try { if (n.stop) n.stop(); } catch(e2) {}
+          try { n.disconnect(); } catch(e2) {}
+        });
+      }
+    } else {
+      nodesToStop.forEach(function(n) {
+        try { if (n.stop) n.stop(); } catch(e) {}
+        try { n.disconnect(); } catch(e) {}
+      });
+    }
+
     if (soundPlaying) {
       soundPlaying.classList.remove('playing');
       soundPlaying.querySelector('.icon-play').style.display  = '';
@@ -3817,18 +3845,28 @@
   }
 
   function playSound(item) {
-    const id     = item.dataset.sound;
-    const isSame = soundPlaying === item;
-    stopSound();
+    var id     = item.dataset.sound;
+    var isSame = soundPlaying === item;
+    var FADE   = 200; // ms crossfade
+
+    stopSound(FADE);
     if (isSame) return; // toggle off
 
-    try {
-      const ctx    = ensureCtx();
-      const master = getMaster(ctx);
-      master.gain.value = getSoundVolume();
-      const synth = SYNTHS[id];
-      if (synth) soundNodes = synth(ctx, master);
-    } catch(e) { console.warn('Sound error:', e); }
+    // Delay starting new sound slightly so fade-out overlaps cleanly
+    var startDelay = FADE * 0.5;
+    setTimeout(function() {
+      try {
+        var ctx    = ensureCtx();
+        var master = getMaster(ctx);
+        // Ramp gain back up smoothly
+        var now = ctx.currentTime;
+        master.gain.cancelScheduledValues(now);
+        master.gain.setValueAtTime(0, now);
+        master.gain.linearRampToValueAtTime(getSoundVolume(), now + FADE / 1000);
+        var synth = SYNTHS[id];
+        if (synth) soundNodes = synth(ctx, master);
+      } catch(e) { console.warn('Sound error:', e); }
+    }, startDelay);
 
     item.classList.add('playing');
     item.querySelector('.icon-play').style.display  = 'none';
@@ -3865,55 +3903,135 @@
       el.style.display = msg ? 'block' : 'none';
     }
 
-    function stopRadio(restoreUI) {
-      if (radioAudio) {
-        radioAudio.pause();
-        radioAudio.src = '';
-        radioAudio = null;
-      }
-      if (radioPlaying) {
-        radioPlaying.classList.remove('playing');
-        const playBtn = radioPlaying.querySelector('.sound-play-btn');
-        if (playBtn) {
-          playBtn.querySelector('.icon-play').style.display  = '';
-          playBtn.querySelector('.icon-pause').style.display = 'none';
+    var RADIO_FADE_MS = 400; // crossfade duration in ms
+
+    function fadeOutAndStop(audioEl, ms, cb) {
+      if (!audioEl) { if (cb) cb(); return; }
+      var start     = audioEl.volume;
+      var steps     = Math.max(1, Math.round(ms / 20));
+      var stepVal   = start / steps;
+      var interval  = setInterval(function() {
+        if (!audioEl) { clearInterval(interval); if (cb) cb(); return; }
+        audioEl.volume = Math.max(0, audioEl.volume - stepVal);
+        if (audioEl.volume <= 0) {
+          clearInterval(interval);
+          try { audioEl.pause(); audioEl.src = ''; } catch(e) {}
+          if (cb) cb();
         }
-        radioPlaying = null;
+      }, 20);
+    }
+
+    function clearRadioUI(el) {
+      if (!el) return;
+      el.classList.remove('playing');
+      var playBtn = el.querySelector('.sound-play-btn');
+      if (playBtn) {
+        playBtn.querySelector('.icon-play').style.display  = '';
+        playBtn.querySelector('.icon-pause').style.display = 'none';
       }
+    }
+
+    function stopRadio(restoreUI) {
+      var old = radioAudio;
+      radioAudio = null;
+      if (old) { try { old.pause(); old.src = ''; } catch(e) {} }
+      if (restoreUI) clearRadioUI(radioPlaying);
+      radioPlaying = null;
       showError('');
     }
 
     function playRadio(item) {
-      const url   = item.dataset.url;
-      const title = item.dataset.title;
+      var url = item.dataset.url;
 
-      // If clicking the already-playing item, stop it
-      if (radioPlaying === item) { stopRadio(true); return; }
+      // Toggle off if same station
+      if (radioPlaying === item) {
+        var dying = radioAudio;
+        radioAudio = null;
+        radioPlaying = null;
+        clearRadioUI(item);
+        fadeOutAndStop(dying, RADIO_FADE_MS, null);
+        showError('');
+        return;
+      }
 
-      stopRadio(true);
       showError('');
 
-      radioAudio = new Audio();
-      radioAudio.crossOrigin = 'anonymous';
-      radioAudio.volume      = getRadioVolume();
-      radioAudio.src         = url;
-      radioAudio.play().catch(err => {
-        showError('Stream unavailable. Try another station.');
-        stopRadio(true);
-      });
+      // Mark new item as loading immediately so UI feels responsive
+      var prevItem  = radioPlaying;
+      var prevAudio = radioAudio;
 
-      radioAudio.addEventListener('error', () => {
-        showError('Stream unavailable. Try another station.');
-        stopRadio(true);
-      });
-
+      // Optimistically update UI right away
+      clearRadioUI(prevItem);
       radioPlaying = item;
       item.classList.add('playing');
-      const playBtn = item.querySelector('.sound-play-btn');
+      var playBtn = item.querySelector('.sound-play-btn');
       if (playBtn) {
         playBtn.querySelector('.icon-play').style.display  = 'none';
         playBtn.querySelector('.icon-pause').style.display = '';
       }
+
+      // Pre-load the new stream
+      var newAudio = new Audio();
+      newAudio.crossOrigin = 'anonymous';
+      newAudio.volume      = 0; // start silent, fade in
+      newAudio.src         = url;
+
+      // Preconnect/preload hint
+      newAudio.preload = 'auto';
+
+      var started = false;
+
+      function onCanPlay() {
+        if (started) return;
+        started = true;
+        radioAudio = newAudio;
+
+        // Fade in new stream
+        var targetVol = getRadioVolume();
+        var steps     = Math.max(1, Math.round(RADIO_FADE_MS / 20));
+        var stepVal   = targetVol / steps;
+        var interval  = setInterval(function() {
+          newAudio.volume = Math.min(targetVol, newAudio.volume + stepVal);
+          if (newAudio.volume >= targetVol) clearInterval(interval);
+        }, 20);
+
+        // Fade out and discard old stream simultaneously
+        fadeOutAndStop(prevAudio, RADIO_FADE_MS, null);
+      }
+
+      // canplaythrough = enough buffered; canplay = any data ready (better for slow connections)
+      newAudio.addEventListener('canplay', onCanPlay);
+
+      newAudio.play().then(function() {
+        // play() resolved — stream is live, trigger crossfade if not already
+        onCanPlay();
+      }).catch(function(err) {
+        // Autoplay blocked or stream failed
+        showError('Stream unavailable. Try another station.');
+        clearRadioUI(item);
+        if (radioPlaying === item) { radioPlaying = null; radioAudio = null; }
+        try { newAudio.src = ''; } catch(e) {}
+        // Restore prev if still valid
+        if (prevAudio && prevItem) {
+          radioAudio   = prevAudio;
+          radioPlaying = prevItem;
+          prevItem.classList.add('playing');
+          var pb = prevItem.querySelector('.sound-play-btn');
+          if (pb) {
+            pb.querySelector('.icon-play').style.display  = 'none';
+            pb.querySelector('.icon-pause').style.display = '';
+          }
+          prevAudio.volume = getRadioVolume();
+          prevAudio.play().catch(function() {});
+        }
+      });
+
+      newAudio.addEventListener('error', function() {
+        if (radioAudio === newAudio) {
+          showError('Stream unavailable. Try another station.');
+          stopRadio(true);
+        }
+      });
     }
 
     // Radio list click
