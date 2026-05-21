@@ -4023,11 +4023,12 @@
     var vh = window.innerHeight;
 
     /* 1. AM/PM: label to the right + above */
-    var ampmLX = Math.min(ac.x + 125, vw - 8);
+    var ampmShift = 20;
+    var ampmLX = Math.min(ac.x + 160 + ampmShift, vw - 8);
     var ampmLY = Math.max(ac.y - 40, 14);
     drawHint(
       document.getElementById('hint-ampm'),
-      ac.x, ac.y,
+      ac.x + ampmShift, ac.y,
       ampmLX, ampmLY,
       'Click Me!',
       'end'
