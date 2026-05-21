@@ -3998,7 +3998,7 @@
 
   @media (max-width: 480px) and (orientation: portrait) {
     .sk-label {
-      font-size: 17px;
+      font-size: 21px;
     }
   }
 </style>
@@ -4114,10 +4114,23 @@
     var vh = window.innerHeight;
     var isMobPort = vw <= 480 && vh > vw;
 
-    /* 1. AM/PM: label to the right + above */
-    var ampmShift = 20;
-    var ampmLX = Math.min(ac.x + (isMobPort ? 80 : 140) + ampmShift, vw - 8);
-    var ampmLY = Math.max(ac.y - (isMobPort ? 24 : 40), 14);
+    /* stroke & head scale for mobile */
+    var sw   = isMobPort ? '2'  : '2';
+    var hLen = isMobPort ? 8    : 9;
+
+    /* ── 1. AM/PM "Click Me!" ───────────────────────────
+       Icon: top-left (~left:18px, top:~34% of vh)
+       Label: place below the badge, pointing up-left to it  */
+    var ampmShift = isMobPort ? 0 : 20;
+    var ampmLX, ampmLY;
+    if (isMobPort) {
+      /* label sits to the right of badge, same row */
+      ampmLX = Math.min(ac.x + 55, vw - 10);
+      ampmLY = ac.y + 10;
+    } else {
+      ampmLX = Math.min(ac.x + 140 + ampmShift, vw - 8);
+      ampmLY = Math.max(ac.y - 40, 14);
+    }
     drawHint(
       document.getElementById('hint-ampm'),
       ac.x + ampmShift, ac.y,
@@ -4126,22 +4139,27 @@
       'end'
     );
 
-    /* 2. Settings: gentle curve bottom-left to right pointing at gear (like screenshot) */
+    /* ── 2. Settings gear ───────────────────────────────
+       Icon: top-right (~right:12px, top:14px)
+       Label: below and to the left of gear, arrow curves up to it */
     (function () {
       var g2  = document.getElementById('hint-settings');
       g2.innerHTML = '';
       var col = inkColor();
       var NS2 = 'http://www.w3.org/2000/svg';
 
-      /* Text sits below-left of gear */
-      var lx = Math.max(sc.x - (isMobPort ? 30 : 60), 12);
-      var ly = sc.y + (isMobPort ? 22 : 35);
+      var lx, ly;
+      if (isMobPort) {
+        /* label sits left of centre, below the gear */
+        lx = Math.max(sc.x - 80, 12);
+        ly = sc.y + 44;
+      } else {
+        lx = Math.max(sc.x - 60, 12);
+        ly = sc.y + 35;
+      }
 
-      /* Tail starts at bottom-left (near label), tip ends just left of gear */
       var sx = lx,        sy = ly - 10;
       var ex = sc.x - 14, ey = sc.y;
-
-      /* Control point: gentle upward bow in the middle */
       var cx = sx + (ex - sx) * 0.5;
       var cy = ((sy + ey) / 2) - 12;
 
@@ -4149,40 +4167,51 @@
       p.setAttribute('d', 'M'+sx+' '+sy+' Q'+cx+' '+cy+' '+ex+' '+ey);
       p.setAttribute('fill', 'none');
       p.setAttribute('stroke', col);
-      p.setAttribute('stroke-width', isMobPort ? '1.5' : '2');
+      p.setAttribute('stroke-width', sw);
       p.setAttribute('stroke-linecap', 'round');
       g2.appendChild(p);
 
-      /* Arrowhead — angle based on end of curve */
-      var headLen = isMobPort ? 6 : 9;
-      /* tangent at end of quadratic = direction from control point to end point */
       var ang = Math.atan2(ey - cy, ex - cx);
       [ang - 0.45, ang + 0.45].forEach(function (a) {
         var ln = document.createElementNS(NS2, 'line');
         ln.setAttribute('x1', ex); ln.setAttribute('y1', ey);
-        ln.setAttribute('x2', ex - headLen * Math.cos(a));
-        ln.setAttribute('y2', ey - headLen * Math.sin(a));
-        ln.setAttribute('stroke', col); ln.setAttribute('stroke-width', isMobPort ? '1.5' : '2');
+        ln.setAttribute('x2', ex - hLen * Math.cos(a));
+        ln.setAttribute('y2', ey - hLen * Math.sin(a));
+        ln.setAttribute('stroke', col);
+        ln.setAttribute('stroke-width', sw);
         ln.setAttribute('stroke-linecap', 'round');
         g2.appendChild(ln);
       });
 
-      /* Label */
       var t = document.createElementNS(NS2, 'text');
-      t.setAttribute('x', lx - (isMobPort ? 20 : 50)); t.setAttribute('y', ly + (isMobPort ? 12 : 20));
-      t.setAttribute('text-anchor', 'start');
+      if (isMobPort) {
+        t.setAttribute('x', lx); t.setAttribute('y', ly + 18);
+        t.setAttribute('text-anchor', 'start');
+      } else {
+        t.setAttribute('x', lx - 50); t.setAttribute('y', ly + 20);
+        t.setAttribute('text-anchor', 'start');
+      }
       t.setAttribute('class', 'sk-label');
       t.setAttribute('fill', col);
       t.textContent = 'Settings';
       g2.appendChild(t);
     }());
 
-    /* 3. Fullscreen: label to the left + above the icon (arrow points down-right to icon) */
-    var fsLX = Math.max(fc.x - (isMobPort ? 90 : 165), 10);
-    var fsLY = fc.y - (isMobPort ? 36 : 60);
+    /* ── 3. Fullscreen ──────────────────────────────────
+       Icon: bottom-right (~right:12px, bottom:20px)
+       Label: to the left of the icon, arrow curves right to it */
+    var fsLX, fsLY;
+    if (isMobPort) {
+      /* label sits clearly to the left, same vertical band */
+      fsLX = Math.max(fc.x - 100, 10);
+      fsLY = fc.y - 30;
+    } else {
+      fsLX = Math.max(fc.x - 165, 10);
+      fsLY = fc.y - 60;
+    }
     var fsDx = fc.x - fsLX, fsDy = fc.y - fsLY;
     var fsDist = Math.sqrt(fsDx*fsDx + fsDy*fsDy);
-    var fsShortenBy = 18;
+    var fsShortenBy = isMobPort ? 14 : 18;
     drawHint(
       document.getElementById('hint-fullscreen'),
       fc.x - (fsDx/fsDist)*fsShortenBy, fc.y - (fsDy/fsDist)*fsShortenBy,
