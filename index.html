@@ -721,49 +721,38 @@
       }
     }
 
-    /* ── Landscape iPhone — bottom sheet, swipe-down to close ── */
+    /* ── Landscape mobile — compact centered card, all content visible ── */
     @media (max-width: 932px) and (orientation: landscape) and (max-height: 480px) {
       .modal-overlay {
-        padding: 0;
-        align-items: flex-end;
+        padding: 10px 16px;
+        align-items: center;
         justify-content: center;
         overflow-y: auto;
       }
       .modal {
-        border-radius: 18px 18px 0 0;
-        width: 100%;
-        max-width: 100%;
+        border-radius: 16px;
+        width: 92vw;
+        max-width: 680px;
         min-width: 0;
         height: auto;
-        max-height: calc(100dvh - 8px);
+        max-height: calc(100dvh - 20px);
         min-height: unset;
-        padding: 8px 14px 10px 14px;
+        padding: 10px 14px 8px 14px;
         display: flex;
         flex-direction: column;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+        overflow: hidden;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.65);
       }
-      /* Drag handle pill — top center */
-      .modal::before {
-        content: '';
-        display: block;
-        width: 32px;
-        height: 4px;
-        border-radius: 2px;
-        background: rgba(255,255,255,0.18);
-        margin: 0 auto 8px;
-        flex-shrink: 0;
-      }
-      body.light-mode .modal::before {
-        background: rgba(0,0,0,0.14);
-      }
+      /* No drag pill — centred card doesn't need it */
+      .modal::before { display: none; }
+      body.light-mode .modal::before { display: none; }
+
       .modal-header {
-        margin-bottom: 4px;
+        margin-bottom: 6px;
         flex-shrink: 0;
       }
       .modal-title {
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 700;
       }
       .modal-close {
@@ -771,7 +760,7 @@
         height: 24px;
       }
       .modal-tabs {
-        margin-bottom: 5px;
+        margin-bottom: 6px;
         border-radius: 8px;
         padding: 2px;
         gap: 2px;
@@ -784,23 +773,59 @@
       .modal-tabs::-webkit-scrollbar { display: none; }
       .modal-tab {
         font-size: 9px;
-        padding: 4px 6px;
+        padding: 5px 7px;
         border-radius: 6px;
         font-weight: 600;
         flex-shrink: 0;
       }
       .tab-content-wrap {
+        flex: 1;
+        min-height: 0;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         margin-bottom: 5px;
       }
       .setting-section {
-        margin-bottom: 7px;
+        margin-bottom: 6px;
       }
       .setting-label {
         font-size: 8px;
         margin-bottom: 4px;
       }
+      /* Language buttons — 3-per-row compact grid */
+      .lang-btn {
+        padding: 5px 4px;
+        font-size: 10px;
+        border-radius: 7px;
+      }
+      /* Clock size row */
+      .clock-size-row { margin-top: 4px; gap: 8px; }
+      .clock-size-value { font-size: 10px; }
+      /* About section */
+      .modal-about {
+        padding: 4px 6px;
+        font-size: 8px;
+        flex-shrink: 0;
+      }
+      .modal-about-title { font-size: 8px; }
+      .modal-about-body p { font-size: 7px; margin-bottom: 2px; }
+      /* Divider */
+      .modal-divider { margin: 0 0 4px; }
+      /* Share + sponsor row */
+      .modal-share-standalone {
+        padding: 4px 6px;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .share-icon-btn {
+        width: 22px;
+        height: 22px;
+      }
+      .support-us-btn {
+        font-size: 8px;
+        padding: 3px 8px;
+      }
+      /* Footer */
       .modal-footer {
         font-size: 7px;
         padding-top: 5px;
@@ -812,32 +837,6 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }
-      .modal-about {
-        padding: 5px 8px;
-        font-size: 9px;
-      }
-      .modal-divider {
-        margin: 0 0 5px;
-      }
-      .modal-share-standalone {
-        padding: 5px 8px;
-        gap: 6px;
-      }
-      .share-icon-btn {
-        width: 24px;
-        height: 24px;
-      }
-      .support-us-btn {
-        font-size: 9px;
-        padding: 4px 8px;
-      }
-      .modal-about-title {
-        font-size: 9px;
-      }
-      .modal-about-body p {
-        font-size: 8px;
-        margin-bottom: 4px;
       }
     }
     body.light-mode .modal {
@@ -2886,12 +2885,10 @@
     let startY = 0, startX = 0, dragging = false;
 
     modalEl.addEventListener('touchstart', function (e) {
-      /* Drag from top 80px strip — covers pill + header in both orientations */
+      /* Drag from top 60px strip — header area in both orientations */
       const rect   = modalEl.getBoundingClientRect();
       const touchY = e.touches[0].clientY - rect.top;
-      const isLandscape = window.innerWidth > window.innerHeight && window.innerHeight <= 480;
-      const threshold = isLandscape ? 80 : 56;
-      if (touchY > threshold) return;
+      if (touchY > 60) return;
       startY   = e.touches[0].clientY;
       startX   = e.touches[0].clientX;
       dragging = true;
