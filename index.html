@@ -4507,13 +4507,14 @@
          they follow the clock no matter the screen width.
       ══════════════════════════════════════════════════════ */
 
-      /* 1. "Click Me!" — label right of arrow, arrow curves down-left to badge */
+      /* 1. "Click Me!" — label right, arrow curves left-down to AM/PM badge */
       drawHint(
         document.getElementById('hint-ampm'),
         ac.x, ac.y,
-        ac.x + 60, ac.y - 50,
+        ac.x + 65, ac.y - 30,
         'Click Me!',
-        'start'
+        'start',
+        0
       );
 
       /* 2. "Settings" — label left of gear, arrow right to gear */
