@@ -709,8 +709,15 @@
         margin-bottom: 12px;
       }
       .modal-footer {
-        font-size: 9px;
+        font-size: 8px;
         padding-top: 10px;
+        gap: 2px;
+      }
+      .mf-left, .mf-center, .mf-right {
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 
@@ -796,9 +803,16 @@
         margin-bottom: 6px;
       }
       .modal-footer {
-        font-size: 9px;
+        font-size: 8px;
         padding-top: 8px;
         flex-shrink: 0;
+        gap: 2px;
+      }
+      .mf-left, .mf-center, .mf-right {
+        letter-spacing: 0.01em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .modal-about {
         padding: 10px 12px;
@@ -4276,7 +4290,7 @@
         document.getElementById('hint-ampm'),
         ac.x, ac.y,
         ac.x + 18, ac.y - 55,
-        'Click Me!',
+        '* Click AM/PM on top left for Light or Dark Mode.',
         'start'
       );
 
@@ -4352,7 +4366,7 @@
         document.getElementById('hint-ampm'),
         ac.x, ac.y,
         ac.x - 10, ac.y - 55,
-        'Click Me!',
+        '* Click AM/PM on top left for Light or Dark Mode.',
         'end'
       );
 
@@ -4468,7 +4482,7 @@
         document.getElementById('hint-ampm'),
         ac.x + ampmShift, ac.y,
         ampmLX, ampmLY,
-        'Click Me!',
+        '* Click AM/PM on top left for Light or Dark Mode.',
         'end'
       );
 
