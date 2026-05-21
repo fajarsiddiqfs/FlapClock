@@ -3855,6 +3855,9 @@
     var isSame = soundPlaying === item;
     var FADE   = 200; // ms crossfade
 
+    // Stop radio if playing
+    if (typeof window._stopRadio === 'function') window._stopRadio(true);
+
     stopSound(FADE);
     if (isSame) return; // toggle off
 
@@ -3928,6 +3931,7 @@
       radioPlaying = null;
       showError('');
     }
+    window._stopRadio = stopRadio; // expose for ambient sound player
 
     /* Pre-warm: create muted Audio for every station, start loading.
        We do NOT call play() — that needs a user gesture.
@@ -3973,6 +3977,9 @@
         playBtn.querySelector('.icon-play').style.display  = 'none';
         playBtn.querySelector('.icon-pause').style.display = '';
       }
+
+      // Stop ambient sound if playing
+      if (typeof stopSound === 'function') stopSound(0);
 
       // Stop old stream instantly (no fade — speed matters)
       if (radioAudio) { try { radioAudio.pause(); } catch(e) {} }
