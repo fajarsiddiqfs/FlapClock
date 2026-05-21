@@ -3903,7 +3903,7 @@
       el.style.display = msg ? 'block' : 'none';
     }
 
-    var RADIO_FADE_MS = 400; // crossfade duration in ms
+    var RADIO_FADE_MS = 150; // short fade-out only (ms)
 
     function fadeOutAndStop(audioEl, ms, cb) {
       if (!audioEl) { if (cb) cb(); return; }
@@ -3970,41 +3970,18 @@
         playBtn.querySelector('.icon-pause').style.display = '';
       }
 
-      // Pre-load the new stream
+      // Fade out old stream immediately so there's no overlap delay
+      fadeOutAndStop(prevAudio, RADIO_FADE_MS, null);
+
+      // Start new stream at full volume right away — no fade-in delay
       var newAudio = new Audio();
-      newAudio.crossOrigin = 'anonymous';
-      newAudio.volume      = 0; // start silent, fade in
-      newAudio.src         = url;
-
-      // Preconnect/preload hint
-      newAudio.preload = 'auto';
-
-      var started = false;
-
-      function onCanPlay() {
-        if (started) return;
-        started = true;
-        radioAudio = newAudio;
-
-        // Fade in new stream
-        var targetVol = getRadioVolume();
-        var steps     = Math.max(1, Math.round(RADIO_FADE_MS / 20));
-        var stepVal   = targetVol / steps;
-        var interval  = setInterval(function() {
-          newAudio.volume = Math.min(targetVol, newAudio.volume + stepVal);
-          if (newAudio.volume >= targetVol) clearInterval(interval);
-        }, 20);
-
-        // Fade out and discard old stream simultaneously
-        fadeOutAndStop(prevAudio, RADIO_FADE_MS, null);
-      }
-
-      // canplaythrough = enough buffered; canplay = any data ready (better for slow connections)
-      newAudio.addEventListener('canplay', onCanPlay);
+      newAudio.volume  = getRadioVolume();
+      newAudio.preload = 'none'; // don't buffer until play() — saves bandwidth on skip
+      newAudio.src     = url;
+      radioAudio       = newAudio;
 
       newAudio.play().then(function() {
-        // play() resolved — stream is live, trigger crossfade if not already
-        onCanPlay();
+        // playing — nothing extra needed
       }).catch(function(err) {
         // Autoplay blocked or stream failed
         showError('Stream unavailable. Try another station.');
@@ -4027,7 +4004,7 @@
       });
 
       newAudio.addEventListener('error', function() {
-        if (radioAudio === newAudio) {
+        if (radioPlaying === item) {
           showError('Stream unavailable. Try another station.');
           stopRadio(true);
         }
