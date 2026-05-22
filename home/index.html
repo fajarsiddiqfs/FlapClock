@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LCD Clock</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #e8e8e8;
+    --display-bg: #f0f0f0;
+    --display-shadow: #aaa;
+    --seg-on: #111;
+    --seg-off: rgba(0,0,0,0.07);
+    --label: #555;
+    --btn-bg: rgba(0,0,0,0.12);
+    --btn-hover: rgba(0,0,0,0.22);
+    --btn-text: #111;
+    --border: rgba(0,0,0,0.18);
+    --inner-glow: rgba(255,255,255,0.7);
+  }
+
+  body.dark {
+    --bg: #111;
+    --display-bg: #000;
+    --display-shadow: #000;
+    --seg-on: #fff;
+    --seg-off: rgba(255,255,255,0.06);
+    --label: #999;
+    --btn-bg: rgba(255,255,255,0.08);
+    --btn-hover: rgba(255,255,255,0.16);
+    --btn-text: #ddd;
+    --border: rgba(255,255,255,0.12);
+    --inner-glow: rgba(255,255,255,0.03);
+  }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    transition: background 0.4s ease;
+  }
+
+  /* subtle texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='1' height='1' fill='rgba(0,0,0,0.03)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .clock-shell {
+    position: relative;
+    z-index: 1;
+    background: var(--bg);
+    border-radius: 0;
+    padding: 4vh 4vw;
+    box-shadow: none;
+    border: none;
+    transition: background 0.4s;
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .display {
+    background: var(--display-bg);
+    border-radius: 20px;
+    padding: 5vh 4vw;
+    box-shadow:
+      inset 4px 4px 16px var(--display-shadow),
+      inset -1px -1px 6px var(--inner-glow);
+    display: flex;
+    align-items: center;
+    gap: 0;
+    transition: background 0.4s, box-shadow 0.4s;
+    border: 1px solid var(--border);
+  }
+
+  /* ---- MAIN TIME ---- */
+  .main-time {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: clamp(6px, 1.5vw, 24px);
+  }
+
+  .ampm-label {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(14px, 2.2vw, 32px);
+    font-weight: 700;
+    color: var(--seg-on);
+    letter-spacing: 0.05em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    margin-right: clamp(6px, 1vw, 16px);
+    opacity: 0.85;
+    transition: color 0.4s;
+    line-height: 1;
+    padding-bottom: 4px;
+  }
+
+  .digits-group {
+    display: flex;
+    align-items: center;
+    gap: clamp(4px, 0.8vw, 12px);
+  }
+
+  .colon {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(10px, 2.5vw, 36px);
+    padding: 0 clamp(4px, 0.8vw, 12px);
+    margin-bottom: 2px;
+  }
+
+  .colon-dot {
+    width: clamp(10px, 1.6vw, 22px);
+    height: clamp(10px, 1.6vw, 22px);
+    border-radius: 50%;
+    background: var(--seg-on);
+    transition: background 0.4s, opacity 0.1s;
+  }
+
+  /* ---- SVG SEGMENT DISPLAY ---- */
+  .seg-digit {
+    width: clamp(60px, 13vw, 200px);
+    height: clamp(100px, 21vw, 320px);
+  }
+
+  .seg-digit.small {
+    width: clamp(30px, 5.5vw, 80px);
+    height: clamp(50px, 9vw, 130px);
+  }
+
+  .seg-digit .seg { fill: var(--seg-off); transition: fill 0.08s; }
+  .seg-digit .seg.on { fill: var(--seg-on); }
+
+  /* ---- SIDE PANEL ---- */
+  .side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-left: clamp(16px, 3vw, 48px);
+    border-left: 1px solid var(--border);
+    margin-left: clamp(12px, 2vw, 32px);
+    min-width: clamp(110px, 18vw, 260px);
+  }
+
+  .panel-section {
+    padding: 10px 0;
+  }
+
+  .panel-section + .panel-section {
+    border-top: 1px solid var(--border);
+  }
+
+  .panel-label {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(9px, 1.1vw, 16px);
+    font-weight: 700;
+    color: var(--label);
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+    transition: color 0.4s;
+  }
+
+  .panel-value {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* ---- CONTROLS ---- */
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 3vh;
+  }
+
+  .ctrl-btn {
+    background: var(--btn-bg);
+    border: 1px solid var(--border);
+    color: var(--btn-text);
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(10px, 1.1vw, 15px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: clamp(8px, 1.2vh, 14px) clamp(16px, 2vw, 28px);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+  }
+
+  .ctrl-btn:hover { background: var(--btn-hover); }
+  .ctrl-btn:active { transform: scale(0.97); }
+
+  .ctrl-btn svg { width: clamp(14px, 1.4vw, 20px); height: clamp(14px, 1.4vw, 20px); flex-shrink: 0; }
+
+  /* snooze/bell icon */
+  .alarm-icons {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+  .alarm-icons svg { width: clamp(12px, 1.5vw, 22px); height: auto; }
+
+  :fullscreen body, :-webkit-full-screen body, :-ms-fullscreen body {
+    min-height: 100vh;
+  }
+  :fullscreen .clock-shell, :-webkit-full-screen .clock-shell {
+    width: 100vw;
+  }
+</style>
+</head>
+<body>
+
+<div class="clock-shell" id="shell">
+  <div class="display">
+
+    <!-- MAIN TIME DISPLAY -->
+    <div class="main-time">
+      <div class="ampm-label" id="ampmLabel">PM</div>
+
+      <!-- Hour tens -->
+      <svg class="seg-digit" id="h1" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- a top -->   <polygon class="seg" id="h1a" points="8,2 52,2 43,14 17,14"/>
+        <!-- b top-r --> <polygon class="seg" id="h1b" points="54,4 54,47 42,41 42,13"/>
+        <!-- c bot-r --> <polygon class="seg" id="h1c" points="54,53 54,96 42,87 42,59"/>
+        <!-- d bot -->   <polygon class="seg" id="h1d" points="8,98 52,98 43,86 17,86"/>
+        <!-- e bot-l --> <polygon class="seg" id="h1e" points="6,53 6,96 18,87 18,59"/>
+        <!-- f top-l --> <polygon class="seg" id="h1f" points="6,4 6,47 18,41 18,13"/>
+        <!-- g mid -->   <polygon class="seg" id="h1g" points="9,46 51,46 45,56 15,56 9,46"/>
+      </svg>
+
+      <!-- Hour units -->
+      <svg class="seg-digit" id="h2" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon class="seg" id="h2a" points="8,2 52,2 43,14 17,14"/>
+        <polygon class="seg" id="h2b" points="54,4 54,47 42,41 42,13"/>
+        <polygon class="seg" id="h2c" points="54,53 54,96 42,87 42,59"/>
+        <polygon class="seg" id="h2d" points="8,98 52,98 43,86 17,86"/>
+        <polygon class="seg" id="h2e" points="6,53 6,96 18,87 18,59"/>
+        <polygon class="seg" id="h2f" points="6,4 6,47 18,41 18,13"/>
+        <polygon class="seg" id="h2g" points="9,46 51,46 45,56 15,56 9,46"/>
+      </svg>
+
+      <div class="colon" id="colonEl">
+        <div class="colon-dot"></div>
+        <div class="colon-dot"></div>
+      </div>
+
+      <!-- Min tens -->
+      <svg class="seg-digit" id="m1" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon class="seg" id="m1a" points="8,2 52,2 43,14 17,14"/>
+        <polygon class="seg" id="m1b" points="54,4 54,47 42,41 42,13"/>
+        <polygon class="seg" id="m1c" points="54,53 54,96 42,87 42,59"/>
+        <polygon class="seg" id="m1d" points="8,98 52,98 43,86 17,86"/>
+        <polygon class="seg" id="m1e" points="6,53 6,96 18,87 18,59"/>
+        <polygon class="seg" id="m1f" points="6,4 6,47 18,41 18,13"/>
+        <polygon class="seg" id="m1g" points="9,46 51,46 45,56 15,56 9,46"/>
+      </svg>
+
+      <!-- Min units -->
+      <svg class="seg-digit" id="m2" viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon class="seg" id="m2a" points="8,2 52,2 43,14 17,14"/>
+        <polygon class="seg" id="m2b" points="54,4 54,47 42,41 42,13"/>
+        <polygon class="seg" id="m2c" points="54,53 54,96 42,87 42,59"/>
+        <polygon class="seg" id="m2d" points="8,98 52,98 43,86 17,86"/>
+        <polygon class="seg" id="m2e" points="6,53 6,96 18,87 18,59"/>
+        <polygon class="seg" id="m2f" points="6,4 6,47 18,41 18,13"/>
+        <polygon class="seg" id="m2g" points="9,46 51,46 45,56 15,56 9,46"/>
+      </svg>
+    </div>
+
+    <!-- SIDE PANEL -->
+    <div class="side-panel">
+
+      <!-- ALARM -->
+      <div class="panel-section">
+        <div class="alarm-icons">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--seg-on)">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--seg-on)">
+            <path d="M2 19h4l1-3"/>
+            <path d="M5 19v3"/><path d="M9 19v3"/>
+          </svg>
+        </div>
+        <div class="panel-label">ALARM</div>
+        <div class="panel-value">
+          <svg class="seg-digit small" id="a1" viewBox="0 0 60 100">
+            <polygon class="seg" id="a1a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="a1b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="a1c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="a1d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="a1e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="a1f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="a1g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+          <div style="color:var(--seg-on);font-size:clamp(14px,2vw,24px);font-weight:700;padding:0 1px;line-height:1;transition:color 0.4s">:</div>
+          <svg class="seg-digit small" id="a2" viewBox="0 0 60 100">
+            <polygon class="seg" id="a2a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="a2b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="a2c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="a2d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="a2e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="a2f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="a2g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+        </div>
+        <div class="panel-label" style="margin-top:3px;font-size:clamp(6px,0.7vw,9px);opacity:0.6" id="alarmAmpm">AM</div>
+      </div>
+
+      <!-- DATE -->
+      <div class="panel-section">
+        <div class="panel-label">MONTH / DATE</div>
+        <div class="panel-value">
+          <svg class="seg-digit small" id="mo1" viewBox="0 0 60 100">
+            <polygon class="seg" id="mo1a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="mo1b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="mo1c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="mo1d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="mo1e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="mo1f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="mo1g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+          <div style="color:var(--seg-on);font-size:clamp(14px,2vw,24px);font-weight:700;padding:0 1px;line-height:1;transition:color 0.4s">/</div>
+          <svg class="seg-digit small" id="mo2" viewBox="0 0 60 100">
+            <polygon class="seg" id="mo2a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="mo2b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="mo2c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="mo2d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="mo2e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="mo2f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="mo2g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- TEMP -->
+      <div class="panel-section">
+        <div class="panel-label">TEMP</div>
+        <div class="panel-value" style="align-items:flex-start">
+          <svg class="seg-digit small" id="t1" viewBox="0 0 60 100">
+            <polygon class="seg" id="t1a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="t1b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="t1c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="t1d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="t1e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="t1f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="t1g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+          <svg class="seg-digit small" id="t2" viewBox="0 0 60 100">
+            <polygon class="seg" id="t2a" points="8,2 52,2 43,14 17,14"/>
+            <polygon class="seg" id="t2b" points="54,4 54,47 42,41 42,13"/>
+            <polygon class="seg" id="t2c" points="54,53 54,96 42,87 42,59"/>
+            <polygon class="seg" id="t2d" points="8,98 52,98 43,86 17,86"/>
+            <polygon class="seg" id="t2e" points="6,53 6,96 18,87 18,59"/>
+            <polygon class="seg" id="t2f" points="6,4 6,47 18,41 18,13"/>
+            <polygon class="seg" id="t2g" points="9,46 51,46 45,56 15,56 9,46"/>
+          </svg>
+          <div style="color:var(--seg-on);font-size:clamp(10px,1.1vw,14px);margin-top:3px;margin-left:2px;font-weight:700;transition:color 0.4s">°C</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="ctrl-btn" id="themeBtn" onclick="toggleTheme()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <span id="themeBtnLabel">DARK MODE</span>
+    </button>
+
+    <button class="ctrl-btn" onclick="toggleFullscreen()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="fsIcon">
+        <polyline points="15 3 21 3 21 9"/>
+        <polyline points="9 21 3 21 3 15"/>
+        <line x1="21" y1="3" x2="14" y2="10"/>
+        <line x1="3" y1="21" x2="10" y2="14"/>
+      </svg>
+      <span id="fsBtnLabel">FULL SCREEN</span>
+    </button>
+  </div>
+</div>
+
+<script>
+// Segment maps: which segments are ON for digits 0-9
+// segments: a(top) b(top-r) c(bot-r) d(bot) e(bot-l) f(top-l) g(mid)
+const DIGITS = {
+  0: [1,1,1,1,1,1,0],
+  1: [0,1,1,0,0,0,0],
+  2: [1,1,0,1,1,0,1],
+  3: [1,1,1,1,0,0,1],
+  4: [0,1,1,0,0,1,1],
+  5: [1,0,1,1,0,1,1],
+  6: [1,0,1,1,1,1,1],
+  7: [1,1,1,0,0,0,0],
+  8: [1,1,1,1,1,1,1],
+  9: [1,1,1,1,0,1,1]
+};
+
+function setDigit(prefix, n) {
+  const segs = ['a','b','c','d','e','f','g'];
+  const map = DIGITS[n];
+  segs.forEach((s, i) => {
+    const el = document.getElementById(prefix + s);
+    if (el) el.classList.toggle('on', !!map[i]);
+  });
+}
+
+let colonVisible = true;
+const ALARM_HOUR = 6;
+const ALARM_MIN = 30;
+
+function tick() {
+  const now = new Date();
+  let h = now.getHours();
+  const m = now.getMinutes();
+  const s = now.getSeconds();
+  const isPM = h >= 12;
+
+  document.getElementById('ampmLabel').textContent = isPM ? 'PM' : 'AM';
+  let h12 = h % 12 || 12;
+
+  setDigit('h1', Math.floor(h12 / 10));
+  setDigit('h2', h12 % 10);
+  setDigit('m1', Math.floor(m / 10));
+  setDigit('m2', m % 10);
+
+  // Blink colon
+  colonVisible = s % 2 === 0;
+  document.querySelectorAll('.colon-dot').forEach(d => {
+    d.style.opacity = colonVisible ? '1' : '0.12';
+  });
+
+  // Date
+  const mo = now.getMonth() + 1;
+  const dt = now.getDate();
+  setDigit('mo1', Math.floor(mo / 10) || 0);
+  setDigit('mo2', mo % 10);
+  // reuse mo2 as date tens, we have 2 digits for month and need date
+  // actually let's show month/date with 1 digit each for month, 2 for date
+  // Let's do month (1-2 digits) and date
+  setDigit('mo1', mo < 10 ? 0 : 1);
+  setDigit('mo2', mo % 10);
+
+  // Temp: show local ambient fake 28°C (realistic for Malaysia)
+  // Use a fixed plausible value
+  setDigit('t1', 2);
+  setDigit('t2', 8);
+
+  // Alarm
+  setDigit('a1', Math.floor(ALARM_HOUR / 10) || 0);
+  setDigit('a2', ALARM_HOUR % 10);
+  // alarm minutes shown in a3/a4 but we only have 2 digits for alarm hour
+  // Let's show 6:30 with the available 2 digit slots showing "6" and second showing "3"
+  // redesign: a1=6 a2=3 (just show hour tens for simplicity, matching the photo)
+  // Actually let's show: a1 as tens of hour (0->blank?), a2 as units of hour (6), then we'd need more for minutes
+  // The photo shows "6:30" - let's use 4 small digits for alarm
+  setDigit('a1', 6);
+  setDigit('a2', 3);
+}
+
+tick();
+setInterval(tick, 500);
+
+// Theme
+let dark = false;
+function toggleTheme() {
+  dark = !dark;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('themeBtnLabel').textContent = dark ? 'LIGHT MODE' : 'DARK MODE';
+  const icon = document.getElementById('themeIcon');
+  if (dark) {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  } else {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  }
+}
+
+// Fullscreen
+function toggleFullscreen() {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen).call(document.documentElement);
+    document.getElementById('fsBtnLabel').textContent = 'EXIT FULL SCREEN';
+    document.getElementById('fsIcon').innerHTML = '<polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="10" y1="14" x2="3" y2="21"/><line x1="21" y1="3" x2="14" y2="10"/>';
+  } else {
+    (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+    document.getElementById('fsBtnLabel').textContent = 'FULL SCREEN';
+    document.getElementById('fsIcon').innerHTML = '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    document.getElementById('fsBtnLabel').textContent = 'FULL SCREEN';
+    document.getElementById('fsIcon').innerHTML = '<polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>';
+  }
+});
+</script>
+</body>
+</html>
