@@ -2282,11 +2282,11 @@
           </div>
         </div>
 
-        <div class="sound-item" data-sound="forest" data-title="Heavy Downpour">
-          <div class="sound-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.5A4 4 0 0 1 6 7h1.5A6 6 0 1 1 19 12.5"/><path d="M7 19v2M11 17v2M15 19v2M19 17v2"/></svg></div>
+        <div class="sound-item" data-sound="forest" data-title="Rain &amp; Thunder">
+          <div class="sound-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9"/><polyline points="13 11 9 17 15 17 11 23"/><path d="M9 18l-1.5 2.5M15 18l-1.5 2.5"/></svg></div>
           <div class="sound-info">
-            <div class="sound-name">Heavy Downpour</div>
-            <div class="sound-desc">Intense rain with puddle splashes and rumbles</div>
+            <div class="sound-name">Rain &amp; Thunder</div>
+            <div class="sound-desc">Heavy rain with deep rolling thunder</div>
           </div>
           <div class="sound-ctrl">
             <div class="sound-play-btn">
@@ -2317,7 +2317,7 @@
         <div class="setting-label" style="margin-bottom:8px">Volume</div>
         <div style="display:flex;align-items:center;gap:10px;">
           <svg style="width:14px;height:14px;flex-shrink:0;color:var(--meta-col);" viewBox="0 0 24 24" fill="currentColor"><path d="M18.5 12A4.5 4.5 0 0 0 16 7.97V16a4.48 4.48 0 0 0 2.5-4zM5 9v6h4l5 5V4L9 9H5z"/></svg>
-          <input type="range" id="sound-volume" min="0" max="100" value="60" class="volume-slider">
+          <input type="range" id="sound-volume" min="0" max="100" value="90" class="volume-slider">
           <svg style="width:16px;height:16px;flex-shrink:0;color:var(--meta-col);" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
         </div>
       </div>
@@ -3732,12 +3732,12 @@
       const roar     = makeNoise(ctx, 4);
       const roarLpf1 = biquad(ctx, 'lowpass', 680);
       const roarLpf2 = biquad(ctx, 'lowpass', 520);   // double-filter for steep roll-off
-      const gRoar    = gain(ctx, 0.13);
+      const gRoar    = gain(ctx, 0.32);
       // Very slow intensity swell — rain gusting outside
       const lfoSwell  = ctx.createOscillator();
       const lfoSwellG = ctx.createGain();
       lfoSwell.type = 'sine'; lfoSwell.frequency.value = 0.022;  // ~45 s cycle
-      lfoSwellG.gain.value = 0.030;
+      lfoSwellG.gain.value = 0.075;
       lfoSwell.connect(lfoSwellG); lfoSwellG.connect(gRoar.gain);
       roar.connect(roarLpf1); roarLpf1.connect(roarLpf2); roarLpf2.connect(gRoar); gRoar.connect(dest);
       roar.start(); lfoSwell.start();
@@ -3746,11 +3746,11 @@
       // ── Layer 2: deep low-frequency body — structural vibration, distant thunder feel
       const body    = makeNoise(ctx, 4);
       const bodyLpf = biquad(ctx, 'lowpass', 160);
-      const gBody   = gain(ctx, 0.055);
+      const gBody   = gain(ctx, 0.14);
       const lfoBody  = ctx.createOscillator();
       const lfoBodyG = ctx.createGain();
       lfoBody.type = 'sine'; lfoBody.frequency.value = 0.038;
-      lfoBodyG.gain.value = 0.018;
+      lfoBodyG.gain.value = 0.045;
       lfoBody.connect(lfoBodyG); lfoBodyG.connect(gBody.gain);
       body.connect(bodyLpf); bodyLpf.connect(gBody); gBody.connect(dest);
       body.start(); lfoBody.start();
@@ -3760,7 +3760,7 @@
       const roof    = makeNoise(ctx, 4);
       const roofBpf = biquad(ctx, 'bandpass', 900, 0.5);
       const roofLpf = biquad(ctx, 'lowpass',  1100);
-      const gRoof   = gain(ctx, 0.038);
+      const gRoof   = gain(ctx, 0.095);
       roof.connect(roofBpf); roofBpf.connect(roofLpf); roofLpf.connect(gRoof); gRoof.connect(dest);
       roof.start();
       nodes.push(roof, roofBpf, roofLpf, gRoof);
@@ -3774,7 +3774,7 @@
         const bpf = biquad(ctx, 'bandpass', 1800 + Math.random() * 600, 12);
         const env = ctx.createGain();
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.022 + Math.random() * 0.012, now + 0.004);
+        env.gain.linearRampToValueAtTime(0.055 + Math.random() * 0.030, now + 0.004);
         env.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
         n.connect(bpf); bpf.connect(env); env.connect(dest);
         n.start(now); n.stop(now + 0.07);
@@ -3784,7 +3784,7 @@
         const ringE = ctx.createGain();
         ring.type = 'sine';
         ring.frequency.value = 2200 + Math.random() * 400;
-        ringE.gain.setValueAtTime(0.008, now + 0.003);
+        ringE.gain.setValueAtTime(0.020, now + 0.003);
         ringE.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
         ring.connect(ringE); ringE.connect(dest);
         ring.start(now + 0.003); ring.stop(now + 0.20);
@@ -3798,7 +3798,7 @@
         const lpf  = biquad(ctx, 'lowpass', 420);
         const env  = ctx.createGain();
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.028 + Math.random() * 0.016, now + 0.018);
+        env.gain.linearRampToValueAtTime(0.070 + Math.random() * 0.040, now + 0.018);
         env.gain.exponentialRampToValueAtTime(0.001, now + 0.22 + Math.random() * 0.14);
         n.connect(lpf); lpf.connect(env); env.connect(dest);
         n.start(now); n.stop(now + 0.40);
@@ -3843,7 +3843,7 @@
       // Constant soft low rumble
       const bed = makeNoise(ctx, 4);
       const blp = biquad(ctx, 'lowpass', 240);
-      const gbg = gain(ctx, 0.040);
+      const gbg = gain(ctx, 0.10);
       bed.connect(blp); blp.connect(gbg); gbg.connect(dest);
       bed.start();
       nodes.push(bed, blp, gbg);
@@ -3862,8 +3862,8 @@
             const hp = biquad(ctx, 'highpass', 180);
             const g  = ctx.createGain();
             g.gain.setValueAtTime(0.001, now);
-            g.gain.linearRampToValueAtTime(0.030, now + bldT);
-            g.gain.linearRampToValueAtTime(0.110, now + bldT + crT);
+            g.gain.linearRampToValueAtTime(0.075, now + bldT);
+            g.gain.linearRampToValueAtTime(0.28, now + bldT + crT);
             g.gain.exponentialRampToValueAtTime(0.001, now + dur);
             n.connect(lp); lp.connect(hp); hp.connect(g); g.connect(dest);
             n.start(now); n.stop(now + dur + 0.1);
@@ -3881,7 +3881,7 @@
     },
 
     forest(ctx, dest) {
-      // Heavy Downpour — intense rain, puddle splashes, low rumble
+      // Rain & Thunder — heavy continuous rain + deep rolling thunder strikes
       const alive = { on: true };
       const nodes = [];
       const tids  = [];
@@ -3893,82 +3893,127 @@
         nodes.push({ _tid: tid, disconnect() { clearTimeout(this._tid); } });
       }
 
-      // Dense wide-band rain roar — the main body
-      const rainBed  = makeNoise(ctx, 4);
-      const rLpf     = biquad(ctx, 'lowpass',  6000);
-      const rHpf     = biquad(ctx, 'highpass', 300);
-      const gRain    = gain(ctx, 0.10);
-      const lfoRain  = ctx.createOscillator();
-      const lfoRainG = ctx.createGain();
-      lfoRain.type = 'sine'; lfoRain.frequency.value = 0.05;
-      lfoRainG.gain.value = 0.018;
-      lfoRain.connect(lfoRainG); lfoRainG.connect(gRain.gain);
-      rainBed.connect(rLpf); rLpf.connect(rHpf); rHpf.connect(gRain); gRain.connect(dest);
-      rainBed.start(); lfoRain.start();
-      nodes.push(rainBed, rLpf, rHpf, gRain, lfoRain, lfoRainG);
+      // ── Layer 1: main heavy rain roar — wide-band, dense
+      const rain1    = makeNoise(ctx, 4);
+      const r1lpf    = biquad(ctx, 'lowpass',  5500);
+      const r1hpf    = biquad(ctx, 'highpass', 400);
+      const gRain1   = gain(ctx, 0.22);
+      rain1.connect(r1lpf); r1lpf.connect(r1hpf); r1hpf.connect(gRain1); gRain1.connect(dest);
+      rain1.start();
+      nodes.push(rain1, r1lpf, r1hpf, gRain1);
 
-      // Deep low rumble under the rain
-      const rumbleBed = makeNoise(ctx, 4);
-      const rumbleLpf = biquad(ctx, 'lowpass', 180);
-      const gRumble   = gain(ctx, 0.048);
-      rumbleBed.connect(rumbleLpf); rumbleLpf.connect(gRumble); gRumble.connect(dest);
-      rumbleBed.start();
-      nodes.push(rumbleBed, rumbleLpf, gRumble);
+      // ── Layer 2: mid rain texture — slightly different band for fullness
+      const rain2    = makeNoise(ctx, 4);
+      const r2bpf    = biquad(ctx, 'bandpass', 1800, 0.7);
+      const gRain2   = gain(ctx, 0.14);
+      rain2.connect(r2bpf); r2bpf.connect(gRain2); gRain2.connect(dest);
+      rain2.start();
+      nodes.push(rain2, r2bpf, gRain2);
 
-      // Puddle splash — low wide burst
-      const makeSplash = () => {
+      // ── Layer 3: deep low rumble — constant distant storm presence
+      const rumble   = makeNoise(ctx, 4);
+      const rLpf     = biquad(ctx, 'lowpass', 140);
+      const gRumble  = gain(ctx, 0.18);
+      // Slow swell on the rumble — storm breathing
+      const lfoR     = ctx.createOscillator();
+      const lfoRG    = ctx.createGain();
+      lfoR.type = 'sine'; lfoR.frequency.value = 0.03;
+      lfoRG.gain.value = 0.055;
+      lfoR.connect(lfoRG); lfoRG.connect(gRumble.gain);
+      rumble.connect(rLpf); rLpf.connect(gRumble); gRumble.connect(dest);
+      rumble.start(); lfoR.start();
+      nodes.push(rumble, rLpf, gRumble, lfoR, lfoRG);
+
+      // ── Heavy individual drops — sharp impacts on a surface
+      const makeHeavyDrop = () => {
         const now  = ctx.currentTime;
-        const n    = makeNoise(ctx, 0.5);
-        const lpf  = biquad(ctx, 'lowpass',  1800);
-        const hpf  = biquad(ctx, 'highpass', 200);
-        const env  = ctx.createGain();
-        const vol  = 0.055 + Math.random() * 0.045;
-        env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(vol, now + 0.008);
-        env.gain.exponentialRampToValueAtTime(0.001, now + 0.18 + Math.random() * 0.12);
-        n.connect(lpf); lpf.connect(hpf); hpf.connect(env); env.connect(dest);
-        n.start(now); n.stop(now + 0.35);
-        nodes.push(n, lpf, hpf, env);
-      };
-
-      // Heavy individual drop impact — crisp thwack
-      const makeBigDrop = () => {
-        const now  = ctx.currentTime;
-        const freq = 600 + Math.random() * 800;
+        const freq = 500 + Math.random() * 1200;
         const n    = makeNoise(ctx, 0.3);
-        const bpf  = biquad(ctx, 'bandpass', freq, 5);
+        const bpf  = biquad(ctx, 'bandpass', freq, 6);
         const env  = ctx.createGain();
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.038 + Math.random() * 0.025, now + 0.005);
-        env.gain.exponentialRampToValueAtTime(0.001, now + 0.09 + Math.random() * 0.06);
+        env.gain.linearRampToValueAtTime(0.10 + Math.random() * 0.07, now + 0.005);
+        env.gain.exponentialRampToValueAtTime(0.001, now + 0.07 + Math.random() * 0.05);
         n.connect(bpf); bpf.connect(env); env.connect(dest);
-        n.start(now); n.stop(now + 0.18);
+        n.start(now); n.stop(now + 0.16);
         nodes.push(n, bpf, env);
       };
 
-      // Dense rapid drops
       const scheduleDrop = () => {
-        const gap = 30 + Math.random() * 80;
+        const gap = 25 + Math.random() * 70;
         safeTimeout(() => {
-          makeBigDrop();
-          if (Math.random() < 0.4) safeTimeout(makeBigDrop, 12 + Math.random() * 20);
+          makeHeavyDrop();
+          if (Math.random() < 0.35) safeTimeout(makeHeavyDrop, 10 + Math.random() * 18);
           scheduleDrop();
         }, gap);
       };
 
-      // Puddle splashes — medium frequency
-      const scheduleSplash = () => {
-        const gap = 350 + Math.random() * 900;
+      // ── Thunder strike — the heart of this sound
+      // A real thunder rumble has: initial crack → low boom → long reverberant tail
+      const makeThunder = () => {
+        const now = ctx.currentTime;
+
+        // 1. Initial crack / bright transient (0–0.3s)
+        const crack  = makeNoise(ctx, 1);
+        const cLpf   = biquad(ctx, 'lowpass',  3000);
+        const cHpf   = biquad(ctx, 'highpass', 200);
+        const cEnv   = ctx.createGain();
+        cEnv.gain.setValueAtTime(0.001, now);
+        cEnv.gain.linearRampToValueAtTime(0.55, now + 0.04);
+        cEnv.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+        crack.connect(cLpf); cLpf.connect(cHpf); cHpf.connect(cEnv); cEnv.connect(dest);
+        crack.start(now); crack.stop(now + 0.4);
+        nodes.push(crack, cLpf, cHpf, cEnv);
+
+        // 2. Deep boom body (0.1–2.5s) — the chest-thumping low end
+        const boom   = makeNoise(ctx, 4);
+        const bLpf   = biquad(ctx, 'lowpass', 120);
+        const bEnv   = ctx.createGain();
+        bEnv.gain.setValueAtTime(0.001, now + 0.08);
+        bEnv.gain.linearRampToValueAtTime(0.70, now + 0.30);
+        bEnv.gain.exponentialRampToValueAtTime(0.001, now + 2.8);
+        boom.connect(bLpf); bLpf.connect(bEnv); bEnv.connect(dest);
+        boom.start(now + 0.08); boom.stop(now + 3.0);
+        nodes.push(boom, bLpf, bEnv);
+
+        // 3. Mid rumble roll (0.2–5s) — the rolling echo through clouds
+        const roll   = makeNoise(ctx, 4);
+        const roLpf  = biquad(ctx, 'lowpass',  400);
+        const roHpf  = biquad(ctx, 'highpass', 60);
+        const roEnv  = ctx.createGain();
+        roEnv.gain.setValueAtTime(0.001, now + 0.15);
+        roEnv.gain.linearRampToValueAtTime(0.35, now + 0.6);
+        roEnv.gain.exponentialRampToValueAtTime(0.001, now + 5.5 + Math.random() * 2);
+        roll.connect(roLpf); roLpf.connect(roHpf); roHpf.connect(roEnv); roEnv.connect(dest);
+        roll.start(now + 0.15); roll.stop(now + 8.0);
+        nodes.push(roll, roLpf, roHpf, roEnv);
+
+        // 4. Long reverberant low tail (1s–8s) — distant echo fading away
+        const tail   = makeNoise(ctx, 4);
+        const tLpf   = biquad(ctx, 'lowpass', 80);
+        const tEnv   = ctx.createGain();
+        tEnv.gain.setValueAtTime(0.001, now + 0.8);
+        tEnv.gain.linearRampToValueAtTime(0.22, now + 1.5);
+        tEnv.gain.exponentialRampToValueAtTime(0.001, now + 8.0 + Math.random() * 3);
+        tail.connect(tLpf); tLpf.connect(tEnv); tEnv.connect(dest);
+        tail.start(now + 0.8); tail.stop(now + 12.0);
+        nodes.push(tail, tLpf, tEnv);
+      };
+
+      // Thunder scheduler — random gaps 12–35 s, feels natural and unpredictable
+      const scheduleThunder = () => {
+        const gap = 12000 + Math.random() * 23000;
         safeTimeout(() => {
-          makeSplash();
-          if (Math.random() < 0.25) safeTimeout(makeSplash, 80 + Math.random() * 60);
-          scheduleSplash();
+          makeThunder();
+          scheduleThunder();
         }, gap);
       };
 
+      // Start everything
       scheduleDrop();
-      scheduleSplash();
-      safeTimeout(makeSplash, 100);
+      scheduleThunder();
+      // First thunder comes soon so it doesn't feel like it's missing
+      safeTimeout(makeThunder, 2500 + Math.random() * 3000);
 
       nodes.push({ _tid: null, disconnect() { alive.on = false; tids.forEach(clearTimeout); } });
       return nodes;
@@ -4139,11 +4184,11 @@
       const drizzle = makeNoise(ctx, 4);
       const lpf     = biquad(ctx, 'lowpass', 1800);
       const hpf     = biquad(ctx, 'highpass', 600);
-      const gDrizzle = gain(ctx, 0.045);
+      const gDrizzle = gain(ctx, 0.11);
       const lfo  = ctx.createOscillator();
       const lfoG = ctx.createGain();
       lfo.type = 'sine'; lfo.frequency.value = 0.04;
-      lfoG.gain.value = 0.012;
+      lfoG.gain.value = 0.030;
       lfo.connect(lfoG); lfoG.connect(gDrizzle.gain);
       drizzle.connect(lpf); lpf.connect(hpf); hpf.connect(gDrizzle); gDrizzle.connect(dest);
       drizzle.start(); lfo.start();
@@ -4158,7 +4203,7 @@
           const bpf = biquad(ctx, 'bandpass', freq, 5);
           const env = ctx.createGain();
           env.gain.setValueAtTime(0.001, now);
-          env.gain.linearRampToValueAtTime(0.028 + Math.random() * 0.018, now + 0.010);
+          env.gain.linearRampToValueAtTime(0.070 + Math.random() * 0.045, now + 0.010);
           env.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
           n.connect(bpf); bpf.connect(env); env.connect(dest);
           n.start(now); n.stop(now + 0.12);
@@ -4186,7 +4231,7 @@
             const tlpf = biquad(ctx, 'lowpass', 120);
             const tg  = ctx.createGain();
             tg.gain.setValueAtTime(0.001, now);
-            tg.gain.linearRampToValueAtTime(0.07, now + 0.8);
+            tg.gain.linearRampToValueAtTime(0.18, now + 0.8);
             tg.gain.exponentialRampToValueAtTime(0.001, now + 4.5);
             tn.connect(tlpf); tlpf.connect(tg); tg.connect(dest);
             tn.start(now); tn.stop(now + 5);
@@ -4270,7 +4315,7 @@
             osc.frequency.setValueAtTime(freq, now);
             osc.frequency.linearRampToValueAtTime(freq * 1.18, now + 0.09);
             env.gain.setValueAtTime(0.001, now);
-            env.gain.linearRampToValueAtTime(0.08, now + 0.02);
+            env.gain.linearRampToValueAtTime(0.20, now + 0.02);
             env.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
             osc.connect(env); env.connect(dest);
             osc.start(now); osc.stop(now + 0.14);
@@ -4295,7 +4340,7 @@
         vibG.gain.value = 28;
         vib.connect(vibG); vibG.connect(osc.frequency);
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.07, now + 0.04);
+        env.gain.linearRampToValueAtTime(0.18, now + 0.04);
         env.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
         osc.connect(env); env.connect(dest);
         osc.start(now); osc.stop(now + 0.4);
@@ -4323,8 +4368,8 @@
           }, startDelay);
         };
         const base = 420 + Math.random() * 60;
-        makeNote(base,   0,   0.38, 0.09);
-        makeNote(base * 0.88, 500, 0.30, 0.07);
+        makeNote(base,   0,   0.38, 0.22);
+        makeNote(base * 0.88, 500, 0.30, 0.18);
       };
 
       // Sparrow-like: short sharp chips, 2–4 rapid identical notes
@@ -4340,7 +4385,7 @@
             osc.type = 'triangle';
             osc.frequency.value = freq;
             env.gain.setValueAtTime(0.001, now);
-            env.gain.linearRampToValueAtTime(0.06, now + 0.01);
+            env.gain.linearRampToValueAtTime(0.15, now + 0.01);
             env.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
             osc.connect(env); env.connect(dest);
             osc.start(now); osc.stop(now + 0.09);
