@@ -4539,8 +4539,8 @@
         var lx = ac.x + 34;
         var ly = ac.y - 32;
 
-        /* Arrow tail: starts below the label text */
-        var sx = lx + 20;
+        /* Arrow tail: starts below the label text, shifted right */
+        var sx = lx + 36;
         var sy = ly + 14;
 
         /* Arrow tip: just above-right of badge centre */
@@ -4548,9 +4548,9 @@
         var ex = ac.x + tipGap;
         var ey = ac.y - tipGap;
 
-        /* Control point: drops down first then swings left to badge */
-        var mx = sx - 10;
-        var my = ey - 10;
+        /* Control point: deep bend — drops well below then sweeps left to badge */
+        var mx = (sx + ex) / 2;
+        var my = Math.max(sy, ey) + 28;
 
         var p = document.createElementNS(NS1, 'path');
         p.setAttribute('d', 'M'+sx+' '+sy+' Q'+mx+' '+my+' '+ex+' '+ey);
