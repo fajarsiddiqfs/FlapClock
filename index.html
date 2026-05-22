@@ -2254,11 +2254,11 @@
           </div>
         </div>
 
-        <div class="sound-item" data-sound="rain" data-title="Forest Rain">
+        <div class="sound-item" data-sound="rain" data-title="Rain on Window">
           <div class="sound-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19v2M12 17v4M16 19v2M4 14.5A4 4 0 0 1 6 7h1.5A6 6 0 1 1 19 12.5"/><path d="M9 17l1-2M13 15l1-2"/></svg></div>
           <div class="sound-info">
-            <div class="sound-name">Forest Rain</div>
-            <div class="sound-desc">Rain pattering on forest leaves and branches</div>
+            <div class="sound-name">Rain on Window</div>
+            <div class="sound-desc">Cozy indoor rain — muffled through glass, soft taps on the pane</div>
           </div>
           <div class="sound-ctrl">
             <div class="sound-play-btn">
@@ -3713,7 +3713,9 @@
   const SYNTHS = {
 
     rain(ctx, dest) {
-      // Forest Rain — rain pattering on leaves, branches, soft earth
+      // Cozy Indoor Rain — heard through glass from inside a warm room.
+      // Wall/glass filters out highs: muffled roar, low rumble, soft swells,
+      // occasional windowpane taps, distant gutter trickle.
       const alive = { on: true };
       const nodes = [];
       const tids  = [];
@@ -3725,80 +3727,109 @@
         nodes.push({ _tid: tid, disconnect() { clearTimeout(this._tid); } });
       }
 
-      // Continuous leaf-patter bed: mid-high bandpassed noise
-      const leafBed   = makeNoise(ctx, 4);
-      const leafLpf   = biquad(ctx, 'lowpass',  4000);
-      const leafHpf   = biquad(ctx, 'highpass', 1200);
-      const gLeaf     = gain(ctx, 0.055);
-      const lfoLeaf   = ctx.createOscillator();
-      const lfoLeafG  = ctx.createGain();
-      lfoLeaf.type = 'sine'; lfoLeaf.frequency.value = 0.07;
-      lfoLeafG.gain.value = 0.014;
-      lfoLeaf.connect(lfoLeafG); lfoLeafG.connect(gLeaf.gain);
-      leafBed.connect(leafLpf); leafLpf.connect(leafHpf); leafHpf.connect(gLeaf); gLeaf.connect(dest);
-      leafBed.start(); lfoLeaf.start();
-      nodes.push(leafBed, leafLpf, leafHpf, gLeaf, lfoLeaf, lfoLeafG);
+      // ── Layer 1: muffled rain roar — the main outdoor mass heard through walls
+      // Glass/wall kills everything above ~700 Hz; what's left is a soft grey hiss
+      const roar     = makeNoise(ctx, 4);
+      const roarLpf1 = biquad(ctx, 'lowpass', 680);
+      const roarLpf2 = biquad(ctx, 'lowpass', 520);   // double-filter for steep roll-off
+      const gRoar    = gain(ctx, 0.13);
+      // Very slow intensity swell — rain gusting outside
+      const lfoSwell  = ctx.createOscillator();
+      const lfoSwellG = ctx.createGain();
+      lfoSwell.type = 'sine'; lfoSwell.frequency.value = 0.022;  // ~45 s cycle
+      lfoSwellG.gain.value = 0.030;
+      lfoSwell.connect(lfoSwellG); lfoSwellG.connect(gRoar.gain);
+      roar.connect(roarLpf1); roarLpf1.connect(roarLpf2); roarLpf2.connect(gRoar); gRoar.connect(dest);
+      roar.start(); lfoSwell.start();
+      nodes.push(roar, roarLpf1, roarLpf2, gRoar, lfoSwell, lfoSwellG);
 
-      // Low earth/ground layer for body
-      const earthBed = makeNoise(ctx, 4);
-      const earthLpf = biquad(ctx, 'lowpass', 500);
-      const gEarth   = gain(ctx, 0.032);
-      earthBed.connect(earthLpf); earthLpf.connect(gEarth); gEarth.connect(dest);
-      earthBed.start();
-      nodes.push(earthBed, earthLpf, gEarth);
+      // ── Layer 2: deep low-frequency body — structural vibration, distant thunder feel
+      const body    = makeNoise(ctx, 4);
+      const bodyLpf = biquad(ctx, 'lowpass', 160);
+      const gBody   = gain(ctx, 0.055);
+      const lfoBody  = ctx.createOscillator();
+      const lfoBodyG = ctx.createGain();
+      lfoBody.type = 'sine'; lfoBody.frequency.value = 0.038;
+      lfoBodyG.gain.value = 0.018;
+      lfoBody.connect(lfoBodyG); lfoBodyG.connect(gBody.gain);
+      body.connect(bodyLpf); bodyLpf.connect(gBody); gBody.connect(dest);
+      body.start(); lfoBody.start();
+      nodes.push(body, bodyLpf, gBody, lfoBody, lfoBodyG);
 
-      // Individual raindrop taps on leaves — sharp plucks
-      const makeDrop = () => {
+      // ── Layer 3: mid presence — rain on the roof/ceiling, slightly more present
+      const roof    = makeNoise(ctx, 4);
+      const roofBpf = biquad(ctx, 'bandpass', 900, 0.5);
+      const roofLpf = biquad(ctx, 'lowpass',  1100);
+      const gRoof   = gain(ctx, 0.038);
+      roof.connect(roofBpf); roofBpf.connect(roofLpf); roofLpf.connect(gRoof); gRoof.connect(dest);
+      roof.start();
+      nodes.push(roof, roofBpf, roofLpf, gRoof);
+
+      // ── Windowpane tap — a single raindrop hitting glass
+      // Glass tap: sharp transient with a brief high-pitched ring that quickly damps
+      const makeWindowTap = () => {
         const now  = ctx.currentTime;
-        const freq = 900 + Math.random() * 2200;
-        const n    = makeNoise(ctx, 0.5);
-        const bpf  = biquad(ctx, 'bandpass', freq, 8 + Math.random() * 6);
-        const env  = ctx.createGain();
-        const vol  = 0.018 + Math.random() * 0.022;
+        // Tap transient: very short noise burst
+        const n   = makeNoise(ctx, 0.2);
+        const bpf = biquad(ctx, 'bandpass', 1800 + Math.random() * 600, 12);
+        const env = ctx.createGain();
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(vol, now + 0.006);
-        env.gain.exponentialRampToValueAtTime(0.001, now + 0.055 + Math.random() * 0.04);
+        env.gain.linearRampToValueAtTime(0.022 + Math.random() * 0.012, now + 0.004);
+        env.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
         n.connect(bpf); bpf.connect(env); env.connect(dest);
-        n.start(now); n.stop(now + 0.12);
+        n.start(now); n.stop(now + 0.07);
         nodes.push(n, bpf, env);
+        // Faint glass ring after the tap
+        const ring  = ctx.createOscillator();
+        const ringE = ctx.createGain();
+        ring.type = 'sine';
+        ring.frequency.value = 2200 + Math.random() * 400;
+        ringE.gain.setValueAtTime(0.008, now + 0.003);
+        ringE.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
+        ring.connect(ringE); ringE.connect(dest);
+        ring.start(now + 0.003); ring.stop(now + 0.20);
+        nodes.push(ring, ringE);
       };
 
-      // Heavier branch drip — low thud, spaced out
-      const makeBranchDrip = () => {
+      // ── Gutter trickle — muffled low gurgle from outside drainage
+      const makeGutterDrip = () => {
         const now  = ctx.currentTime;
         const n    = makeNoise(ctx, 0.5);
-        const bpf  = biquad(ctx, 'bandpass', 280 + Math.random() * 180, 3);
+        const lpf  = biquad(ctx, 'lowpass', 420);
         const env  = ctx.createGain();
         env.gain.setValueAtTime(0.001, now);
-        env.gain.linearRampToValueAtTime(0.045 + Math.random() * 0.02, now + 0.012);
-        env.gain.exponentialRampToValueAtTime(0.001, now + 0.18 + Math.random() * 0.1);
-        n.connect(bpf); bpf.connect(env); env.connect(dest);
-        n.start(now); n.stop(now + 0.32);
-        nodes.push(n, bpf, env);
+        env.gain.linearRampToValueAtTime(0.028 + Math.random() * 0.016, now + 0.018);
+        env.gain.exponentialRampToValueAtTime(0.001, now + 0.22 + Math.random() * 0.14);
+        n.connect(lpf); lpf.connect(env); env.connect(dest);
+        n.start(now); n.stop(now + 0.40);
+        nodes.push(n, lpf, env);
       };
 
-      // Fast leaf-drop scheduler (dense patter)
-      const scheduleDrop = () => {
-        const gap = 60 + Math.random() * 160;
+      // Windowpane taps — sparse, 2–6 s apart, sometimes a quick double-tap
+      const scheduleTap = () => {
+        const gap = 2000 + Math.random() * 4000;
         safeTimeout(() => {
-          makeDrop();
-          if (Math.random() < 0.3) safeTimeout(makeDrop, 18 + Math.random() * 25);
-          scheduleDrop();
+          makeWindowTap();
+          if (Math.random() < 0.28) safeTimeout(makeWindowTap, 80 + Math.random() * 120);
+          scheduleTap();
         }, gap);
       };
 
-      // Slower branch drip scheduler
-      const scheduleBranchDrip = () => {
-        const gap = 900 + Math.random() * 2200;
+      // Gutter drips — slow, quiet, 1.5–5 s apart
+      const scheduleGutter = () => {
+        const gap = 1500 + Math.random() * 3500;
         safeTimeout(() => {
-          makeBranchDrip();
-          scheduleBranchDrip();
+          makeGutterDrip();
+          if (Math.random() < 0.2) safeTimeout(makeGutterDrip, 200 + Math.random() * 180);
+          scheduleGutter();
         }, gap);
       };
 
-      scheduleDrop();
-      scheduleBranchDrip();
-      safeTimeout(makeBranchDrip, 300);
+      scheduleTap();
+      scheduleGutter();
+      // First sounds arrive almost immediately so it doesn't feel blank
+      safeTimeout(makeWindowTap,  400);
+      safeTimeout(makeGutterDrip, 900);
 
       nodes.push({ _tid: null, disconnect() { alive.on = false; tids.forEach(clearTimeout); } });
       return nodes;
