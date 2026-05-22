@@ -38,42 +38,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 36px;
+    gap: 28px;
     width: 100%;
     height: 100%;
   }
   .clock-wrap {
-    width: min(52vw, 52vh);
-    height: min(52vw, 52vh);
+    width: min(74vw, 74vh);
+    height: min(74vw, 74vh);
     flex-shrink: 0;
   }
   #clockCanvas { width: 100%; height: 100%; display: block; }
-  .time-block { text-align: center; line-height: 1; }
-  .time-display { display: flex; align-items: flex-start; justify-content: center; gap: 6px; }
-  .time-num {
-    font-family: 'DM Sans', sans-serif;
-    font-weight: 700;
-    color: var(--text-primary);
-    letter-spacing: -3px;
-    line-height: 1;
-    font-size: clamp(52px, 8.5vw, 108px);
-    transition: color .4s;
-  }
-  .time-ampm {
-    font-size: clamp(11px, 1.3vw, 15px);
-    font-weight: 400;
-    color: var(--text-secondary);
-    margin-top: clamp(8px, 1.3vw, 15px);
-    font-family: 'DM Mono', monospace;
-    letter-spacing: .08em;
-    transition: color .4s;
-  }
   .date-display {
-    font-size: clamp(12px, 1.2vw, 15px);
+    font-size: clamp(13px, 1.4vw, 17px);
     font-weight: 400;
     color: var(--text-secondary);
-    margin-top: 10px;
-    letter-spacing: .05em;
+    letter-spacing: .06em;
     transition: color .4s;
   }
   .icon-btn {
@@ -105,13 +84,7 @@
   <div class="clock-wrap">
     <canvas id="clockCanvas"></canvas>
   </div>
-  <div class="time-block">
-    <div class="time-display">
-      <span class="time-num" id="timeNum">12:00</span>
-      <span class="time-ampm" id="ampm">AM</span>
-    </div>
-    <div class="date-display" id="dateDisplay"></div>
-  </div>
+  <div class="date-display" id="dateDisplay"></div>
 </div>
 
 <button class="icon-btn" id="fsBtn" aria-label="Toggle fullscreen">
@@ -125,36 +98,33 @@ let isDark = false;
 
 function pal() {
   return isDark ? {
-    bg:         '#1c1c22',
-    outer:      '#1e1e26',
-    face:       '#18181f',
-    shDark:     '#0b0b0f',
-    shLight:    '#2e2e38',
-    tickMinor:  '#38383f',
-    tickMajor:  '#565660',
-    hand:       '#d8d8d8',
-    handSec:    '#999',
-    dot:        '#e0e0e0',
-    dotHole:    '#18181f',
+    bg:        '#1c1c22',
+    outer:     '#1e1e26',
+    face:      '#18181f',
+    shDark:    '#0b0b0f',
+    shLight:   '#2e2e38',
+    tickMinor: '#38383f',
+    tickMajor: '#565660',
+    hand:      '#d8d8d8',
+    handSec:   '#999',
+    dot:       '#e0e0e0',
+    dotHole:   '#18181f',
   } : {
-    bg:         '#e4e4e9',
-    outer:      '#eaeaef',
-    face:       '#dcdce2',
-    shDark:     '#b4b4ba',
-    shLight:    '#ffffff',
-    tickMinor:  '#c4c4ca',
-    tickMajor:  '#999',
-    hand:       '#1a1a1a',
-    handSec:    '#555',
-    dot:        '#1a1a1a',
-    dotHole:    '#dcdce2',
+    bg:        '#e4e4e9',
+    outer:     '#eaeaef',
+    face:      '#dcdce2',
+    shDark:    '#b4b4ba',
+    shLight:   '#ffffff',
+    tickMinor: '#c4c4ca',
+    tickMajor: '#999',
+    hand:      '#1a1a1a',
+    handSec:   '#555',
+    dot:       '#1a1a1a',
+    dotHole:   '#dcdce2',
   };
 }
 
-/* Draw a circle with neumorphic raised shadow using a radial gradient overlay
-   instead of double-pass shadow (which bleeds on one side). */
 function neuCircle(x, y, r, fill, shDark, shLight, blur, offset) {
-  // 1. Draw clipped outer shadow (dark — bottom-right)
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -166,7 +136,6 @@ function neuCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.fill();
   ctx.restore();
 
-  // 2. Top-left light shadow on separate layer clipped to circle
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -175,14 +144,12 @@ function neuCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.shadowBlur    = blur;
   ctx.shadowOffsetX = -offset * 3;
   ctx.shadowOffsetY = -offset * 3;
-  // draw a disc slightly outside clip so only its shadow bleeds in
   ctx.beginPath();
   ctx.arc(x - offset * 3, y - offset * 3, r * 1.3, 0, Math.PI * 2);
   ctx.fillStyle = fill;
   ctx.fill();
   ctx.restore();
 
-  // 3. Re-fill the circle cleanly so the interior is solid
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -191,9 +158,7 @@ function neuCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.restore();
 }
 
-/* Inset (pressed) circle using inner shadows via clipped shadow trick */
 function insetCircle(x, y, r, fill, shDark, shLight, blur, offset) {
-  // fill base
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -201,7 +166,6 @@ function insetCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.fill();
   ctx.restore();
 
-  // inset dark shadow (bottom-right inside edge)
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -216,7 +180,6 @@ function insetCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.fill();
   ctx.restore();
 
-  // inset light highlight (top-left inside edge)
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -231,7 +194,6 @@ function insetCircle(x, y, r, fill, shDark, shLight, blur, offset) {
   ctx.fill();
   ctx.restore();
 
-  // re-fill centre so no artefacts from overdrawn expanded discs
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r * 0.88, 0, Math.PI * 2);
@@ -255,13 +217,9 @@ function drawClock() {
   const blur   = R * 0.10;
   const offset = R * 0.055;
 
-  // Outer raised disc
   neuCircle(cx, cy, outerR, p.outer, p.shDark, p.shLight, blur, offset);
-
-  // Inset face
   insetCircle(cx, cy, faceR, p.face, p.shDark, p.shLight, R * 0.08, R * 0.04);
 
-  // Tick marks
   ctx.save();
   ctx.shadowColor = 'transparent';
   for (let i = 0; i < 60; i++) {
@@ -279,7 +237,6 @@ function drawClock() {
   }
   ctx.restore();
 
-  // Time calc
   const now  = new Date();
   const ms   = now.getMilliseconds();
   const secs = now.getSeconds() + ms / 1000;
@@ -309,7 +266,6 @@ function drawClock() {
   hand(hAngle, faceR * 0.50, R * 0.048, p.hand);
   hand(mAngle, faceR * 0.70, R * 0.032, p.hand);
 
-  // Second hand with tail
   ctx.save();
   ctx.shadowColor   = isDark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.10)';
   ctx.shadowBlur    = R * 0.04;
@@ -324,7 +280,6 @@ function drawClock() {
   ctx.stroke();
   ctx.restore();
 
-  // Center dot ring
   ctx.save();
   ctx.shadowColor = 'transparent';
   ctx.beginPath();
@@ -338,14 +293,9 @@ function drawClock() {
   ctx.restore();
 }
 
-function updateDigital() {
-  const now  = new Date();
-  const h    = now.getHours(), m = now.getMinutes();
-  const h12  = h % 12 || 12;
-  document.getElementById('timeNum').textContent =
-    h12.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0');
-  document.getElementById('ampm').textContent = h < 12 ? 'AM' : 'PM';
-  const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function updateDate() {
+  const now    = new Date();
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dateDisplay').textContent =
     days[now.getDay()] + ', ' + now.getDate() + ' ' + months[now.getMonth()] + ' ' + now.getFullYear();
@@ -363,7 +313,7 @@ function resize() {
 function frame() {
   resize();
   drawClock();
-  updateDigital();
+  updateDate();
   requestAnimationFrame(frame);
 }
 
