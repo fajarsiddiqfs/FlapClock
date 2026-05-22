@@ -661,7 +661,7 @@
       border: 1px solid rgba(255, 255, 255, 0.11);
       border-radius: 24px;
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       padding: 28px 24px 24px;
       box-shadow:
         0 8px 32px rgba(0, 0, 0, 0.55),
@@ -737,7 +737,7 @@
       }
       .modal-tab {
         font-size: 10px;
-        padding: 8px 4px;
+        padding: 8px 9px;
         border-radius: 9px;
         font-weight: 600;
       }
@@ -1333,6 +1333,93 @@
     }
     .embed-copy-feedback.show { opacity: 1; }
 
+    /* ── Clocks Tab ──────────────────────────────────────── */
+    .clocks-tab-intro {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      color: rgba(255,255,255,0.40);
+      text-align: center;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+    body.light-mode .clocks-tab-intro { color: rgba(0,0,0,0.40); }
+    .clock-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .clock-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      text-decoration: none;
+      transition: background .18s, border-color .18s, transform .15s;
+      cursor: pointer;
+    }
+    .clock-card:hover {
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,255,255,0.18);
+      transform: translateY(-1px);
+    }
+    body.light-mode .clock-card {
+      background: rgba(0,0,0,0.04);
+      border-color: rgba(0,0,0,0.09);
+    }
+    body.light-mode .clock-card:hover {
+      background: rgba(0,0,0,0.08);
+      border-color: rgba(0,0,0,0.18);
+    }
+    .clock-card-icon {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.75);
+    }
+    .clock-card-icon svg { width: 22px; height: 22px; }
+    body.light-mode .clock-card-icon {
+      background: rgba(0,0,0,0.06);
+      border-color: rgba(0,0,0,0.10);
+      color: rgba(0,0,0,0.65);
+    }
+    .clock-card-body { flex: 1; min-width: 0; }
+    .clock-card-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.90);
+      margin-bottom: 3px;
+    }
+    body.light-mode .clock-card-title { color: rgba(0,0,0,0.85); }
+    .clock-card-desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.42);
+      line-height: 1.45;
+    }
+    body.light-mode .clock-card-desc { color: rgba(0,0,0,0.45); }
+    .clock-card-arrow {
+      flex-shrink: 0;
+      color: rgba(255,255,255,0.25);
+      transition: color .18s, transform .15s;
+    }
+    .clock-card:hover .clock-card-arrow {
+      color: rgba(255,255,255,0.60);
+      transform: translateX(2px);
+    }
+    .clock-card-arrow svg { width: 16px; height: 16px; }
+    body.light-mode .clock-card-arrow { color: rgba(0,0,0,0.22); }
+    body.light-mode .clock-card:hover .clock-card-arrow { color: rgba(0,0,0,0.55); }
+
     /* ── Divider ─────────────────────────────────────────── */
     .modal-divider {
       height: 1px;
@@ -1565,7 +1652,7 @@
     /* ── Tabs ────────────────────────────────────────────── */
     .modal-tabs {
       display: flex;
-      gap: 4px;
+      gap: 3px;
       margin-bottom: 20px;
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.07);
@@ -1573,21 +1660,22 @@
       padding: 4px;
       flex-shrink: 0;
     }
+    .modal-tabs::-webkit-scrollbar { display: none; }
     body.light-mode .modal-tabs {
       background: rgba(0,0,0,0.05);
       border-color: rgba(0,0,0,0.07);
     }
     .modal-tab {
       flex: 1;
-      padding: 7px 4px;
+      padding: 7px 2px;
       border-radius: 9px;
       border: none;
       background: transparent;
       color: rgba(255,255,255,0.45);
       font-family: "Inter", sans-serif;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
       cursor: pointer;
       transition: background .18s, color .18s, box-shadow .18s;
       white-space: nowrap;
@@ -1993,6 +2081,7 @@
       <button class="modal-tab" data-tab="sound">Sound</button>
       <button class="modal-tab" data-tab="radio">Radio</button>
       <button class="modal-tab" data-tab="embed">Embed</button>
+      <button class="modal-tab" data-tab="clocks">Clocks</button>
     </div>
 
     <!-- Tab content wrapper -->
@@ -2372,6 +2461,67 @@
       </div>
 
     </div>
+
+    <!-- ── TAB: Clocks ── -->
+    <div class="tab-panel" id="tab-clocks">
+      <div class="clocks-tab-intro">Explore our collection of Flap Clock experiences, each crafted for a different setting.</div>
+      <div class="clock-cards">
+
+        <!-- Home Clock -->
+        <a class="clock-card" href="https://flapclock.com/home" target="_blank" rel="noopener">
+          <div class="clock-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/>
+              <path d="M9 21V12h6v9"/>
+            </svg>
+          </div>
+          <div class="clock-card-body">
+            <div class="clock-card-title">Home Clock</div>
+            <div class="clock-card-desc">Your personal fullscreen clock for the living room or desktop. Clean, ambient, always on.</div>
+          </div>
+          <div class="clock-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </a>
+
+        <!-- Wall Clock -->
+        <a class="clock-card" href="https://flapclock.com/wall" target="_blank" rel="noopener">
+          <div class="clock-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="18" rx="2"/>
+              <line x1="2" y1="9" x2="22" y2="9"/>
+              <line x1="12" y1="9" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <div class="clock-card-body">
+            <div class="clock-card-title">Wall Clock</div>
+            <div class="clock-card-desc">Designed for wall-mounted displays and TV screens. Bold digits, optimised for distance viewing.</div>
+          </div>
+          <div class="clock-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </a>
+
+        <!-- Dash Clock -->
+        <a class="clock-card" href="https://flapclock.com/Dash" target="_blank" rel="noopener">
+          <div class="clock-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <path d="M8 4v16M16 4v16"/>
+              <path d="M2 12h20"/>
+            </svg>
+          </div>
+          <div class="clock-card-body">
+            <div class="clock-card-title">Dash Clock</div>
+            <div class="clock-card-desc">A compact dashboard clock built for focus mode, sidebars, and minimal workspace setups.</div>
+          </div>
+          <div class="clock-card-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </div>
+        </a>
+
+      </div>
+    </div><!-- /tab-clocks -->
 
     </div><!-- /tab-content-wrap -->
 
