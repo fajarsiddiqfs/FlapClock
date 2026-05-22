@@ -4543,14 +4543,14 @@
         var sx = lx;
         var sy = ly + 4;
 
-        /* Arrow tip: just right of the badge centre */
+        /* Arrow tip: just to the right of the badge centre */
         var tipGap = 10;
         var ex = ac.x + tipGap;
         var ey = ac.y + tipGap;
 
-        /* Control point: slight leftward dip so arrow curves left-down */
-        var mx = sx - 10;
-        var my = (sy + ey) / 2;
+        /* Control point: pull far left of midpoint to create a proper leftward curve */
+        var mx = ac.x - 8;
+        var my = sy;
 
         var p = document.createElementNS(NS1, 'path');
         p.setAttribute('d', 'M'+sx+' '+sy+' Q'+mx+' '+my+' '+ex+' '+ey);
