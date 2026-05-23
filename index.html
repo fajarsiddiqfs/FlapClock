@@ -2135,7 +2135,7 @@
     <span class="meta" id="loc-span">Locating…</span>
     <span class="meta meta-sep" id="weather-sep" style="display:none"> · </span>
     <span id="weather-icon-wrap" style="display:none; align-items:center; justify-content:center; flex-shrink:0; color:var(--meta-col); transition:color .35s;">
-      <svg id="weather-icon-el" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:var(--meta-icon-size,13px); height:var(--meta-icon-size,13px); display:block;"></svg>
+      <svg id="weather-icon-el" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="width:var(--meta-icon-size,16px); height:var(--meta-icon-size,16px); display:block;"></svg>
     </span>
     <span class="meta" id="weather-span" style="display:none"></span>
   </div>
@@ -3616,7 +3616,10 @@
         document.getElementById('weather-icon-el').innerHTML = icon;
         const span = document.getElementById('weather-span');
         span.style.display = '';
-        span.textContent = `${temp}°`;
+        // Always show both °C and °F
+        const tempC = useFahrenheit ? Math.round((temp - 32) * 5 / 9) : temp;
+        const tempF = useFahrenheit ? temp : Math.round(temp * 9 / 5 + 32);
+        span.textContent = `${tempC}°C / ${tempF}°F`;
       })
       .catch(() => {}); // fail silently — weather is non-critical
   }
@@ -3638,18 +3641,54 @@
   }
 
   function weatherIcon(code) {
-    // ☀ Clear — bold filled sun with triangular rays
-    if (code === 0) return '<circle cx="12" cy="12" r="4.5" fill="currentColor"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="7.05" y2="7.05"/><line x1="16.95" y1="16.95" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="16.95" y2="7.05"/><line x1="7.05" y1="16.95" x2="4.93" y2="19.07"/></g>';
-    // ⛅ Partly cloudy — sun peeking behind cloud
-    if (code <= 2) return '<circle cx="10" cy="10" r="3" fill="currentColor" opacity=".85"/><g stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity=".85"><line x1="10" y1="5.5" x2="10" y2="4"/><line x1="10" y1="15.5" x2="10" y2="14.5" opacity="0"/><line x1="5.5" y1="10" x2="4" y2="10"/><line x1="7.22" y1="7.22" x2="6.1" y2="6.1"/><line x1="12.78" y1="7.22" x2="13.9" y2="6.1"/></g><path d="M8 14.5a4 4 0 0 1 0-8 3.97 3.97 0 0 1 3.5 2.1A3 3 0 0 1 15 11.5a3 3 0 0 1-3 3H8z" fill="currentColor" opacity=".5" stroke="currentColor" stroke-width="1.2"/>';
-    // 🌫 Overcast / fog — three horizontal bars
-    if (code <= 49) return '<g stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="8" x2="20" y2="8"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="5" y1="16" x2="19" y2="16"/><line x1="7" y1="20" x2="17" y2="20" opacity=".5"/></g>';
-    // 🌧 Rain / drizzle / showers — cloud with angled drops
-    if (code <= 82) return '<path d="M18.5 9.5A4.5 4.5 0 0 0 14 5a4.48 4.48 0 0 0-3.5 1.7A3 3 0 0 0 7 9.5a3 3 0 0 0 0 6h10a3.5 3.5 0 0 0 1.5-6.67V9.5z" fill="currentColor" opacity=".45" stroke="currentColor" stroke-width="1.4"/><g stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="8" y1="18" x2="6" y2="22"/><line x1="12" y1="18" x2="10" y2="22"/><line x1="16" y1="18" x2="14" y2="22"/></g>';
-    // ❄ Snow — cloud with snowflake dots
-    if (code <= 86) return '<path d="M18.5 9.5A4.5 4.5 0 0 0 14 5a4.48 4.48 0 0 0-3.5 1.7A3 3 0 0 0 7 9.5a3 3 0 0 0 0 6h10a3.5 3.5 0 0 0 1.5-6.67V9.5z" fill="currentColor" opacity=".4" stroke="currentColor" stroke-width="1.4"/><g fill="currentColor"><circle cx="8" cy="20" r="1.2"/><circle cx="12" cy="21.5" r="1.2"/><circle cx="16" cy="20" r="1.2"/></g>';
-    // ⚡ Thunderstorm — cloud with lightning bolt
-    return '<path d="M18.5 9.5A4.5 4.5 0 0 0 14 5a4.48 4.48 0 0 0-3.5 1.7A3 3 0 0 0 7 9.5a3 3 0 0 0 0 6h10a3.5 3.5 0 0 0 1.5-6.67V9.5z" fill="currentColor" opacity=".4" stroke="currentColor" stroke-width="1.4"/><polyline points="13,16 10,21 14,21 11,26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+    // ☀️ Clear — solid sun with thick rays
+    if (code === 0) return `
+      <circle cx="12" cy="12" r="5" fill="currentColor"/>
+      <line x1="12" y1="1" x2="12" y2="4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="12" y1="20" x2="12" y2="23" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="1" y1="12" x2="4" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="20" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="4.22" y1="4.22" x2="6.34" y2="6.34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="17.66" y1="17.66" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="19.78" y1="4.22" x2="17.66" y2="6.34" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="6.34" y1="17.66" x2="4.22" y2="19.78" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>`;
+    // ⛅ Partly cloudy — bold sun + solid cloud
+    if (code <= 2) return `
+      <circle cx="9" cy="9" r="3.5" fill="currentColor"/>
+      <line x1="9" y1="3" x2="9" y2="4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="3" y1="9" x2="4.5" y2="9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="5.1" y1="5.1" x2="6.2" y2="6.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12.9" y1="5.1" x2="11.8" y2="6.2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <path d="M10 21H17a4 4 0 0 0 0-8 4 4 0 0 0-7.5-2A3.5 3.5 0 0 0 10 21z" fill="currentColor" opacity="0.85"/>`;
+    // ☁️ Overcast — big solid cloud
+    if (code === 3) return `
+      <path d="M6 19H18a5 5 0 0 0 0-10 5 5 0 0 0-9.5-2A4 4 0 0 0 6 19z" fill="currentColor"/>`;
+    // 🌫️ Fog — thick horizontal lines
+    if (code <= 49) return `
+      <line x1="3" y1="7" x2="21" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="3" y1="17" x2="21" y2="17" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>`;
+    // 🌦️ Drizzle — cloud + light drops
+    if (code <= 59) return `
+      <path d="M6 16H17a4 4 0 0 0 0-8 4 4 0 0 0-7.2-2A3.5 3.5 0 0 0 6 16z" fill="currentColor" opacity="0.85"/>
+      <line x1="8" y1="19" x2="7" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <line x1="13" y1="19" x2="12" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>`;
+    // 🌧️ Rain — cloud + heavy drops
+    if (code <= 82) return `
+      <path d="M6 15H17a4 4 0 0 0 0-8 4 4 0 0 0-7.2-2A3.5 3.5 0 0 0 6 15z" fill="currentColor" opacity="0.85"/>
+      <line x1="7" y1="18" x2="5.5" y2="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="12" y1="18" x2="10.5" y2="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="17" y1="18" x2="15.5" y2="22" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>`;
+    // ❄️ Snow — cloud + bold snowflake dots
+    if (code <= 86) return `
+      <path d="M6 15H17a4 4 0 0 0 0-8 4 4 0 0 0-7.2-2A3.5 3.5 0 0 0 6 15z" fill="currentColor" opacity="0.85"/>
+      <circle cx="8" cy="19.5" r="1.5" fill="currentColor"/>
+      <circle cx="12.5" cy="21" r="1.5" fill="currentColor"/>
+      <circle cx="17" cy="19.5" r="1.5" fill="currentColor"/>`;
+    // ⛈️ Thunderstorm — cloud + bold lightning bolt
+    return `
+      <path d="M6 14H17a4 4 0 0 0 0-8 4 4 0 0 0-7.2-2A3.5 3.5 0 0 0 6 14z" fill="currentColor" opacity="0.85"/>
+      <polyline points="13,14 9.5,20 13.5,20 10,26" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`;
   }
 
   /* ══════════════════════════════════════════════════════
