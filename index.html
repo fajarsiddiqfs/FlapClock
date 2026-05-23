@@ -2792,7 +2792,7 @@
           <div class="changelog-dot"></div>
           <div class="changelog-content">
             <span class="changelog-date">24 May 2026</span>
-            <p class="changelog-task"><span class="changelog-version">v5.2</span> Added Changelog Date & Tasks on Updates Tab.</p>
+            <p class="changelog-task"><span class="changelog-version">v5.1</span> Added Changelog Date & Tasks on Updates Tab.</p>
           </div>
         </div>
 
@@ -3156,8 +3156,10 @@
     flipCard(cards.m, minsStr);
 
     document.getElementById('ampm-badge').textContent = isPM ? 'PM' : 'AM';
+    const shortMonth = month.slice(0, 3);
+    const shortYear  = String(year).slice(-2);
     document.getElementById('date-span').textContent  =
-      `${day} ${month} ${year}, ${DAYS[dayIdx >= 0 ? dayIdx : now.getDay()]}`;
+      `${day} ${shortMonth} ${shortYear}, ${DAYS[dayIdx >= 0 ? dayIdx : now.getDay()]}`;
   }
 
   /* ── init ───────────────────────────────────────────── */
@@ -3255,25 +3257,41 @@
     document.getElementById('loc-span').textContent = t;
   }
   function reverseGeocode(lat, lon) {
-    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=14&addressdetails=1`,
+    // zoom=10 → city/town level; addressdetails=1 gives full breakdown
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10&addressdetails=1`,
           { headers: { 'Accept-Language': 'en', 'User-Agent': 'FlapClock/1.0 (https://flapclock.com)' } })
       .then(r => { if (!r.ok) throw new Error('nominatim'); return r.json(); })
       .then(d => {
         if (d.error) throw new Error('nominatim-error');
         const a = d.address || {};
-        const suburb   = a.suburb || a.neighbourhood || a.quarter || '';
-        const city     = a.city || a.town || a.village || a.municipality || a.county || '';
-        const state    = a.state || '';
-        const country  = a.country_code ? a.country_code.toUpperCase() : (a.country || '');
+
+        // Best city-level name: prefer city > town > village > district > county
+        const city =
+          a.city ||
+          a.town ||
+          a.village ||
+          a.city_district ||
+          a.district ||
+          a.municipality ||
+          a.county ||
+          '';
+
+        // State/region
+        const state = a.state || a.region || a.province || '';
+
+        // Country: use full name for readability, fall back to code
+        const country = a.country || (a.country_code ? a.country_code.toUpperCase() : '');
+
         let loc = '';
-        if (suburb && city && country)       loc = `${suburb}  ·  ${city}  ·  ${country}`;
-        else if (city && state && country)   loc = `${city}  ·  ${state}  ·  ${country}`;
-        else if (city && country)            loc = `${city}  ·  ${country}`;
-        else if (state && country)           loc = `${state}  ·  ${country}`;
-        else loc = d.display_name ? d.display_name.split(',').slice(0,2).join(',').trim() : 'Unknown';
+        if (city && state && country)       loc = `${city}  ·  ${state}  ·  ${country}`;
+        else if (city && country)           loc = `${city}  ·  ${country}`;
+        else if (state && country)          loc = `${state}  ·  ${country}`;
+        else if (d.display_name)            loc = d.display_name.split(',').slice(0, 2).join(',').trim();
+        else                                loc = 'Unknown Location';
+
         setLoc(loc);
       })
-      .catch(() => setLoc('Location Unavailable'));
+      .catch(() => ipFallback());   // fall through to IP if Nominatim fails
   }
   function ipFallback() {
     // Try ipapi.co first, fall back to ip-api.com if rate-limited or errored
@@ -3283,7 +3301,7 @@
         if (d.error || d.reason) throw new Error('ipapi-error');
         const city    = d.city || '';
         const region  = d.region || '';
-        const country = d.country_code || '';
+        const country = d.country_name || d.country_code || '';
         let loc = '';
         if (city && region && country)     loc = `${city}  ·  ${region}  ·  ${country}`;
         else if (city && country)          loc = `${city}  ·  ${country}`;
@@ -3292,13 +3310,13 @@
         if (d.latitude && d.longitude) fetchWeather(d.latitude, d.longitude);
       })
       .catch(() => {
-        // Second IP fallback: freeipapi.com (free, HTTPS, no key needed)
+        // Second IP fallback: freeipapi.com
         fetch('https://freeipapi.com/api/json')
           .then(r => { if (!r.ok) throw new Error('freeipapi'); return r.json(); })
           .then(d => {
             const city    = d.cityName || '';
             const region  = d.regionName || '';
-            const country = d.countryCode || '';
+            const country = d.countryName || d.countryCode || '';
             let loc = '';
             if (city && region && country)     loc = `${city}  ·  ${region}  ·  ${country}`;
             else if (city && country)          loc = `${city}  ·  ${country}`;
