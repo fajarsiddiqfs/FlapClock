@@ -2420,13 +2420,12 @@
         </div>
         <div class="gk-toggle-row">
           <label class="gk-switch">
-            <input type="checkbox" id="gk-enabled" checked>
+            <input type="checkbox" id="gk-enabled">
             <span class="gk-slider"></span>
           </label>
           <span class="gk-toggle-label">Enable cat gatekeeper</span>
         </div>
         <div class="gk-btn-row">
-          <button class="gk-shoo-btn" id="gk-shoo">Dismiss Cat Now</button>
           <button class="gk-save-btn" id="gk-save">Save</button>
         </div>
       </div>
@@ -6013,7 +6012,9 @@
 <!-- ── Cat Gatekeeper Overlay ── -->
 <div id="gk-overlay">
   <video id="gk-cat-video" autoplay loop muted playsinline></video>
+  <video id="gk-cat-video-b" muted playsinline loop style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center bottom;transform:scale(0.70);transform-origin:center bottom;pointer-events:none;user-select:none;opacity:0;transition:opacity 0.08s ease;"></video>
   <div id="gk-timer">0:00</div>
+  <button id="gk-shoo" style="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);padding:10px 24px;border:none;border-radius:999px;background:rgba(255,255,255,0.18);color:#fff;font-size:15px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);pointer-events:auto;">Skip Break</button>
 </div>
 
 <script>
@@ -6033,7 +6034,7 @@
   var defaults = {
     delay: 5,
     breakTime: 1,
-    enabled: true
+    enabled: false
   };
 
   function loadSettings() {
@@ -6088,6 +6089,10 @@
     v.playsInline = true;
     v.loop = true;
     v.style.cssText = 'position:absolute;width:0;height:0;opacity:0;pointer-events:none;';
+    var srcHevc = document.createElement('source');
+    srcHevc.src  = base + '-hevc.mp4';
+    srcHevc.type = 'video/mp4; codecs="hvc1"';
+    v.appendChild(srcHevc);
     // Add both sources — browser picks what it supports
     var srcWebm = document.createElement('source');
     srcWebm.src  = base + '.webm';
@@ -6104,22 +6109,23 @@
 
   // Helper: set video sources (hevc alpha for Safari, webm for Chrome/Firefox, plain mp4 fallback)
   function setVideoSrc(videoEl, base) {
-    // Remove existing sources
     while (videoEl.firstChild) videoEl.removeChild(videoEl.firstChild);
     var srcHevc = document.createElement('source');
     srcHevc.src  = base + '-hevc.mp4';
-    srcHevc.type = 'video/mp4; codecs="hvc1"'; // Safari picks this (HEVC + alpha)
+    srcHevc.type = 'video/mp4; codecs="hvc1"';
     var srcWebm = document.createElement('source');
     srcWebm.src  = base + '.webm';
-    srcWebm.type = 'video/webm';               // Chrome/Firefox pick this
+    srcWebm.type = 'video/webm';
     var srcMp4 = document.createElement('source');
     srcMp4.src  = base + '.mp4';
-    srcMp4.type = 'video/mp4';                 // Last resort fallback (no alpha)
+    srcMp4.type = 'video/mp4';
     videoEl.appendChild(srcHevc);
     videoEl.appendChild(srcWebm);
     videoEl.appendChild(srcMp4);
     videoEl.load();
   }
+
+  var catVideoB = document.getElementById('gk-cat-video-b');
 
   // Pick a random base name each time the cat appears
   function pickRandomVideo() {
@@ -6148,10 +6154,36 @@
     if (isJackos) {
       catVideo.onended = function() {
         catVideo.onended = null;
-        catVideo.loop = true;
-        setVideoSrc(catVideo, 'jackos-sleep');
-        catVideo.currentTime = 0;
-        catVideo.play().catch(function(){});
+        // Preload sleep into the B video element and crossfade
+        catVideoB.style.transition = 'none';
+        catVideoB.style.opacity = '0';
+        setVideoSrc(catVideoB, 'jackos-sleep');
+        catVideoB.loop = true;
+        catVideoB.currentTime = 0;
+        catVideoB.play().then(function() {
+          // Fade B in, fade A out simultaneously
+          catVideoB.style.transition = 'opacity 0.08s ease';
+          catVideoB.style.opacity = '1';
+          catVideo.style.transition = 'opacity 0.08s ease';
+          catVideo.style.opacity = '0';
+          setTimeout(function() {
+            catVideo.pause();
+            catVideo.style.transition = 'none';
+            catVideo.style.opacity = '1';
+            // Move sleep onto the main video so hideCat works normally
+            setVideoSrc(catVideo, 'jackos-sleep');
+            catVideo.loop = true;
+            catVideo.play().catch(function(){});
+            catVideoB.pause();
+            catVideoB.style.opacity = '0';
+          }, 100);
+        }).catch(function(){
+          // Fallback: just swap directly
+          catVideo.loop = true;
+          setVideoSrc(catVideo, 'jackos-sleep');
+          catVideo.currentTime = 0;
+          catVideo.play().catch(function(){});
+        });
       };
     } else {
       catVideo.loop = true;
@@ -6176,8 +6208,13 @@
     catVideo.onended = null;
     overlay.classList.remove('active');
     catVideo.pause();
+    catVideo.style.transition = 'none';
+    catVideo.style.opacity = '1';
     while (catVideo.firstChild) catVideo.removeChild(catVideo.firstChild);
     catVideo.load();
+    catVideoB.pause();
+    catVideoB.style.opacity = '0';
+    while (catVideoB.firstChild) catVideoB.removeChild(catVideoB.firstChild);
     scheduleGatekeeper();
   }
 
