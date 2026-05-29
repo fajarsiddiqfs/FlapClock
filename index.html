@@ -720,16 +720,16 @@
       .modal-close { width: 28px; height: 28px; }
       .modal-tabs {
         grid-template-columns: repeat(5, 1fr);
-        grid-auto-rows: 1fr;
+
         gap: 2px;
         padding: 2px;
         border-radius: 10px;
         margin-bottom: 12px;
       }
       .modal-tab { border-radius: 8px; }
-      .tab-icon { width: 18px; height: 18px; }
-      .tab-icon svg { width: 18px; height: 18px; }
-      .tab-label { font-size: 8px; }
+      .tab-icon { width: 14px; height: 14px; }
+      .tab-icon svg { width: 14px; height: 14px; }
+      .tab-label { font-size: 7px; }
       .tab-content-wrap { margin-bottom: 10px; }
       .setting-section { margin-bottom: 14px; }
       .setting-label { font-size: 10px; margin-bottom: 8px; }
@@ -773,7 +773,7 @@
       .modal-close { width: 26px; height: 26px; }
       .modal-tabs {
         grid-template-columns: repeat(5, 1fr);
-        grid-auto-rows: 1fr;
+
         gap: 2px;
         padding: 2px;
         border-radius: 8px;
@@ -782,9 +782,9 @@
       }
       .modal-tabs::-webkit-scrollbar { display: none; }
       .modal-tab { border-radius: 7px; }
-      .tab-icon { width: 16px; height: 16px; }
-      .tab-icon svg { width: 16px; height: 16px; }
-      .tab-label { font-size: 8px; }
+      .tab-icon { width: 13px; height: 13px; }
+      .tab-icon svg { width: 13px; height: 13px; }
+      .tab-label { font-size: 7px; }
       .tab-content-wrap {
         flex: 1; overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -808,10 +808,16 @@
         border-radius: 20px;
         width: 100%;
         max-width: 420px;
-        height: auto;
-        max-height: 70vh;
+        height: 80vh;
+        max-height: 80vh;
         min-height: unset;
         padding: 20px 18px 18px;
+      }
+      .tab-content-wrap {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .modal::before { display: none; }
       .modal-header { margin-bottom: 20px; }
@@ -819,16 +825,16 @@
       .modal-close { width: 32px; height: 32px; }
       .modal-tabs {
         grid-template-columns: repeat(5, 1fr);
-        grid-auto-rows: 1fr;
+
         gap: 3px;
         padding: 3px;
         border-radius: 12px;
         margin-bottom: 16px;
       }
       .modal-tab { border-radius: 9px; }
-      .tab-icon { width: 22px; height: 22px; }
-      .tab-icon svg { width: 22px; height: 22px; }
-      .tab-label { font-size: 10px; }
+      .tab-icon { width: 16px; height: 16px; }
+      .tab-icon svg { width: 16px; height: 16px; }
+      .tab-label { font-size: 8px; }
       .setting-section { margin-bottom: 20px; }
       .modal-footer { font-size: 10px; padding-top: 12px; }
     }
@@ -840,10 +846,16 @@
         border-radius: 20px;
         width: 44vw;
         max-width: 420px;
-        height: auto;
-        max-height: 72vh;
+        height: 84vh;
+        max-height: 84vh;
         min-height: unset;
         padding: 20px 18px 18px;
+      }
+      .tab-content-wrap {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
       }
       .modal::before { display: none; }
       .modal-header { margin-bottom: 20px; }
@@ -851,16 +863,16 @@
       .modal-close { width: 32px; height: 32px; }
       .modal-tabs {
         grid-template-columns: repeat(5, 1fr);
-        grid-auto-rows: 1fr;
+
         gap: 3px;
         padding: 3px;
         border-radius: 12px;
         margin-bottom: 16px;
       }
       .modal-tab { border-radius: 9px; }
-      .tab-icon { width: 22px; height: 22px; }
-      .tab-icon svg { width: 22px; height: 22px; }
-      .tab-label { font-size: 10px; }
+      .tab-icon { width: 16px; height: 16px; }
+      .tab-icon svg { width: 16px; height: 16px; }
+      .tab-label { font-size: 8px; }
       .setting-section { margin-bottom: 20px; }
       .modal-footer { font-size: 10px; padding-top: 12px; }
     }
@@ -1646,7 +1658,7 @@
     .modal-tabs {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-auto-rows: 1fr;
+
       gap: 2px;
       margin-bottom: 16px;
       background: rgba(255,255,255,0.06);
@@ -1662,8 +1674,7 @@
     }
     .modal-tab {
       width: 100%;
-      aspect-ratio: 1 / 1;
-      padding: 0;
+      padding: 6px 2px;
       border-radius: 9px;
       border: none;
       background: transparent;
@@ -1676,19 +1687,19 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 2px;
       overflow: hidden;
     }
     .tab-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
     }
     .tab-icon svg {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
       stroke: currentColor;
       stroke-width: 2;
       fill: none;
@@ -1696,7 +1707,7 @@
       stroke-linejoin: round;
     }
     .tab-label {
-      font-size: 10px;
+      font-size: 8px;
       font-weight: 600;
       letter-spacing: 0.02em;
       line-height: 1;
