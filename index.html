@@ -6068,13 +6068,16 @@
   var overlay    = document.getElementById('gk-overlay');
   var catVideo   = document.getElementById('gk-cat-video');
   var timerEl    = document.getElementById('gk-timer');
-  var gkTimer    = null; // setInterval for countdown
-  var gkTimeout  = null; // setTimeout for initial delay
+  var gkTimer    = null;
+  var gkTimeout  = null;
   var gkActive   = false;
 
-  // Preload both videos silently so they're buffered and ready to play instantly
+  // All videos to preload (including the sleep transition)
+  var ALL_VIDEOS = ['jackos.webm', 'jackos-sleep.webm', 'faroks.webm'];
+
+  // Preload all videos silently on page load so they play instantly
   var preloadedVideos = {};
-  CAT_VIDEOS.forEach(function(src) {
+  ALL_VIDEOS.forEach(function(src) {
     var v = document.createElement('video');
     v.src = src;
     v.muted = true;
@@ -6102,10 +6105,27 @@
     if (gkActive) return;
     gkActive = true;
     var src = pickRandomVideo();
-    // Use the preloaded video's current buffer by copying its src
+    var isJackos = (src === 'jackos.webm');
+
+    // Play the entry video — non-looping for jackos so we can detect when it ends
+    catVideo.loop = isJackos ? false : true;
     catVideo.src = src;
     catVideo.currentTime = 0;
     catVideo.play().catch(function(){});
+
+    // When jackos entry finishes, switch to sleep video seamlessly
+    if (isJackos) {
+      catVideo.onended = function() {
+        catVideo.onended = null;
+        catVideo.loop = true;
+        catVideo.src = 'jackos-sleep.webm';
+        catVideo.currentTime = 0;
+        catVideo.play().catch(function(){});
+      };
+    } else {
+      catVideo.onended = null;
+    }
+
     overlay.classList.add('active');
     var remaining = breakSeconds;
     timerEl.textContent = formatTime(remaining);
@@ -6121,10 +6141,10 @@
   function hideCat() {
     clearInterval(gkTimer);
     gkActive = false;
+    catVideo.onended = null;
     overlay.classList.remove('active');
     catVideo.pause();
     catVideo.src = '';
-    // Restart the delay timer
     scheduleGatekeeper();
   }
 
@@ -6133,6 +6153,7 @@
     clearInterval(gkTimer);
     if (gkActive) {
       gkActive = false;
+      catVideo.onended = null;
       overlay.classList.remove('active');
       catVideo.pause();
       catVideo.src = '';
