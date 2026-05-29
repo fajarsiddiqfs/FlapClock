@@ -2246,7 +2246,6 @@
       pointer-events: none;
       user-select: none;
       animation: gk-slide-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-      mix-blend-mode: screen; /* Removes black background on Safari/iOS */
     }
     #gk-timer {
       position: absolute;
@@ -6103,16 +6102,20 @@
     preloadedVideos[base] = v;
   });
 
-  // Helper: set video sources (webm first, mp4 fallback)
+  // Helper: set video sources (hevc alpha for Safari, webm for Chrome/Firefox, plain mp4 fallback)
   function setVideoSrc(videoEl, base) {
     // Remove existing sources
     while (videoEl.firstChild) videoEl.removeChild(videoEl.firstChild);
+    var srcHevc = document.createElement('source');
+    srcHevc.src  = base + '-hevc.mp4';
+    srcHevc.type = 'video/mp4; codecs="hvc1"'; // Safari picks this (HEVC + alpha)
     var srcWebm = document.createElement('source');
     srcWebm.src  = base + '.webm';
-    srcWebm.type = 'video/webm';
+    srcWebm.type = 'video/webm';               // Chrome/Firefox pick this
     var srcMp4 = document.createElement('source');
     srcMp4.src  = base + '.mp4';
-    srcMp4.type = 'video/mp4';
+    srcMp4.type = 'video/mp4';                 // Last resort fallback (no alpha)
+    videoEl.appendChild(srcHevc);
     videoEl.appendChild(srcWebm);
     videoEl.appendChild(srcMp4);
     videoEl.load();
