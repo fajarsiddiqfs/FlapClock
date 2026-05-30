@@ -2209,7 +2209,9 @@
     .gk-cat-option:hover { background: rgba(255,255,255,0.12); }
     body.light-mode .gk-cat-option:hover { background: rgba(0,0,0,0.1); }
     .gk-cat-option.selected { border-color: #22c55e; background: rgba(34,197,94,0.12); }
-    .gk-cat-icon { font-size: 26px; line-height: 1; }
+    .gk-cat-icon { display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7); }
+    body.light-mode .gk-cat-icon { color: rgba(0,0,0,0.5); }
+    .gk-cat-option.selected .gk-cat-icon { color: #22c55e; }
     .gk-cat-name { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.8); }
     body.light-mode .gk-cat-name { color: rgba(0,0,0,0.7); }
     .gk-cat-option.selected .gk-cat-name { color: #22c55e; }
@@ -2249,12 +2251,12 @@
 
     /* ── Cat Overlay ─────────────────────────────────────── */
     @keyframes gk-fade-in {
-      from { opacity: 0; transform: scaleX(-1) translateY(30px); }
-      to   { opacity: 1; transform: scaleX(-1) translateY(0); }
+      from { opacity: 0; transform: scaleX(-1) translateX(-80px); }
+      to   { opacity: 1; transform: scaleX(-1) translateX(0); }
     }
     @keyframes gk-fade-out {
-      from { opacity: 1; transform: scaleX(-1) translateY(0); }
-      to   { opacity: 0; transform: scaleX(-1) translateY(30px); }
+      from { opacity: 1; transform: scaleX(-1) translateX(0); }
+      to   { opacity: 0; transform: scaleX(-1) translateX(-80px); }
     }
     #gk-overlay {
       display: none;
@@ -2446,15 +2448,15 @@
         <!-- Cat picker -->
         <div class="gk-cat-picker" id="gk-cat-picker">
           <div class="gk-cat-option selected" data-cat="jackos">
-            <span class="gk-cat-icon">&#x1F431;</span>
+            <span class="gk-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M6 4 L6 12 Q2 13 2 18 Q2 28 16 28 Q30 28 30 18 Q30 13 26 12 L26 4 L21 9 Q18.5 8 16 8 Q13.5 8 11 9 Z M11 17 Q11 15 12.5 15 Q14 15 14 17 Q14 19 12.5 19 Q11 19 11 17 Z M18 17 Q18 15 19.5 15 Q21 15 21 17 Q21 19 19.5 19 Q18 19 18 17 Z"/></svg></span>
             <span class="gk-cat-name">Jackos</span>
           </div>
           <div class="gk-cat-option" data-cat="farok">
-            <span class="gk-cat-icon">&#x1F408;</span>
+            <span class="gk-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M6 4 L6 12 Q2 13 2 18 Q2 28 16 28 Q30 28 30 18 Q30 13 26 12 L26 4 L21 9 Q18.5 8 16 8 Q13.5 8 11 9 Z M11 17 Q11 15 12.5 15 Q14 15 14 17 Q14 19 12.5 19 Q11 19 11 17 Z M18 17 Q18 15 19.5 15 Q21 15 21 17 Q21 19 19.5 19 Q18 19 18 17 Z M14 21 Q16 23 18 21"/></svg></span>
             <span class="gk-cat-name">Farok</span>
           </div>
           <div class="gk-cat-option" data-cat="farah">
-            <span class="gk-cat-icon">&#x1F408;&#x200D;&#x2B1B;</span>
+            <span class="gk-cat-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M6 4 L6 12 Q2 13 2 18 Q2 28 16 28 Q30 28 30 18 Q30 13 26 12 L26 4 L21 9 Q18.5 8 16 8 Q13.5 8 11 9 Z M11 17 Q11 15 12.5 15 Q14 15 14 17 Q14 19 12.5 19 Q11 19 11 17 Z M18 17 Q18 15 19.5 15 Q21 15 21 17 Q21 19 19.5 19 Q18 19 18 17 Z M13 22 Q16 24.5 19 22"/></svg></span>
             <span class="gk-cat-name">Farah</span>
           </div>
         </div>
@@ -6205,9 +6207,14 @@
     overlay.classList.add('active');
 
     catVideo.play().then(function() {
-      // Fade in smoothly once playing
-      catVideo.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      catVideo.style.opacity = '1';
+      // Slide in left to right + fade
+      catVideo.style.transform = 'scaleX(-1) translateX(-80px)';
+      catVideo.style.opacity = '0';
+      requestAnimationFrame(function() {
+        catVideo.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        catVideo.style.opacity = '1';
+        catVideo.style.transform = 'scaleX(-1) translateX(0)';
+      });
     }).catch(function(){
       catVideo.style.opacity = '1';
     });
@@ -6300,6 +6307,7 @@
     // Fade out smoothly, then hide
     catVideo.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
     catVideo.style.opacity = '0';
+    catVideo.style.transform = 'scaleX(-1) translateX(-80px)';
     catVideoB.style.transition = 'opacity 0.5s ease';
     catVideoB.style.opacity = '0';
     setTimeout(function() {
