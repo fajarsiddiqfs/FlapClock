@@ -2270,6 +2270,7 @@
       object-position: center bottom;
       pointer-events: none;
       user-select: none;
+      transform: scaleX(-1);
     }
     #gk-cat-video {
       animation: gk-slide-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -6186,9 +6187,18 @@
     var base = s.selectedCat || 'jackos';
     var hasSleep = (base === 'jackos');
 
-    // Entry video
+    // Use preloaded video directly to avoid lag
+    var preloaded = preloadedVideos[base];
+    if (preloaded) {
+      preloaded.currentTime = 0;
+      preloaded.loop = !hasSleep;
+      preloaded.play().catch(function(){});
+      // Swap src from preloaded into visible element
+      setVideoSrc(catVideo, base);
+    } else {
+      setVideoSrc(catVideo, base);
+    }
     catVideo.loop = !hasSleep;
-    setVideoSrc(catVideo, base);
     catVideo.currentTime = 0;
     catVideo.play().catch(function(){});
 
@@ -6229,21 +6239,52 @@
     }
 
     overlay.classList.add('active');
-    var remaining = breakSeconds;
-    timerEl.textContent = formatTime(remaining);
-    gkTimer = setInterval(function() {
-      remaining--;
-      timerEl.textContent = formatTime(remaining);
+
+    // Use Date-based timer so it survives tab sleep/wake correctly
+    var endTime = Date.now() + breakSeconds * 1000;
+
+    function tick() {
+      if (!gkActive) return;
+      var remaining = Math.ceil((endTime - Date.now()) / 1000);
       if (remaining <= 0) {
         hideCat();
+        return;
       }
-    }, 1000);
+      timerEl.textContent = formatTime(remaining);
+      gkTimer = setTimeout(tick, 250); // poll 4x/sec so wake-up feels instant
+    }
+
+    // Resume timer correctly after screen wake
+    function onVisibilityChange() {
+      if (document.visibilityState === 'visible' && gkActive) {
+        clearTimeout(gkTimer);
+        // If break time already expired while screen was off, hide immediately
+        if (Date.now() >= endTime) {
+          hideCat();
+        } else {
+          // Resume video playback (iOS pauses videos on lock)
+          catVideo.play().catch(function(){});
+          tick();
+        }
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    // Store cleanup ref so hideCat can remove the listener
+    catVideo._visibilityHandler = onVisibilityChange;
+
+    timerEl.textContent = formatTime(breakSeconds);
+    tick();
   }
 
   function hideCat() {
-    clearInterval(gkTimer);
+    clearTimeout(gkTimer);
     gkActive = false;
     catVideo.onended = null;
+    if (catVideo._visibilityHandler) {
+      document.removeEventListener('visibilitychange', catVideo._visibilityHandler);
+      catVideo._visibilityHandler = null;
+    }
     overlay.classList.remove('active');
     catVideo.pause();
     catVideo.style.transition = 'none';
@@ -6258,10 +6299,14 @@
 
   function cancelGatekeeper() {
     clearTimeout(gkTimeout);
-    clearInterval(gkTimer);
+    clearTimeout(gkTimer);
     if (gkActive) {
       gkActive = false;
       catVideo.onended = null;
+      if (catVideo._visibilityHandler) {
+        document.removeEventListener('visibilitychange', catVideo._visibilityHandler);
+        catVideo._visibilityHandler = null;
+      }
       overlay.classList.remove('active');
       catVideo.pause();
       while (catVideo.firstChild) catVideo.removeChild(catVideo.firstChild);
@@ -6273,12 +6318,27 @@
     var s = loadSettings();
     if (!s.enabled) return;
     clearTimeout(gkTimeout);
-    gkTimeout = setTimeout(function() {
-      var fresh = loadSettings();
-      if (fresh.enabled) {
-        showCat(fresh.breakTime * 60);
+    var triggerAt = Date.now() + s.delay * 60 * 1000;
+
+    function checkTrigger() {
+      if (!loadSettings().enabled) return;
+      if (Date.now() >= triggerAt) {
+        var fresh = loadSettings();
+        if (fresh.enabled && !gkActive) showCat(fresh.breakTime * 60);
+      } else {
+        gkTimeout = setTimeout(checkTrigger, 10000); // check every 10s
       }
-    }, s.delay * 60 * 1000);
+    }
+
+    // Also re-check immediately when screen wakes up
+    function onWake() {
+      if (document.visibilityState === 'visible' && !gkActive) {
+        clearTimeout(gkTimeout);
+        checkTrigger();
+      }
+    }
+    document.addEventListener('visibilitychange', onWake);
+    gkTimeout = setTimeout(checkTrigger, 10000);
   }
 
   // Init
