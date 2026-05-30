@@ -6135,7 +6135,7 @@
   // All base names to preload
   var ALL_BASES = ['jackos', 'jackos-sleep', 'farok', 'farah'];
 
-  // Preload both videos silently in the best format for this browser
+  // Preload all videos silently in the best format for this browser
   var preloadedVideos = {};
   ALL_BASES.forEach(function(base) {
     var v = document.createElement('video');
@@ -6147,36 +6147,27 @@
     var srcHevc = document.createElement('source');
     srcHevc.src  = base + '-hevc.mp4';
     srcHevc.type = 'video/mp4; codecs="hvc1"';
-    v.appendChild(srcHevc);
-    // Add both sources — browser picks what it supports
     var srcWebm = document.createElement('source');
-    srcWebm.src  = base + '.webm';
+    srcWebm.src  = base + '-hevc.webm';
     srcWebm.type = 'video/webm';
-    var srcMp4 = document.createElement('source');
-    srcMp4.src  = base + '.mp4';
-    srcMp4.type = 'video/mp4';
+    v.appendChild(srcHevc);
     v.appendChild(srcWebm);
-    v.appendChild(srcMp4);
     document.body.appendChild(v);
     v.load();
     preloadedVideos[base] = v;
   });
 
-  // Helper: set video sources (hevc alpha for Safari, webm for Chrome/Firefox, plain mp4 fallback)
+  // Helper: set video sources (hevc alpha for Safari/iOS, hevc webm for Chrome/Firefox, plain mp4 fallback)
   function setVideoSrc(videoEl, base) {
     while (videoEl.firstChild) videoEl.removeChild(videoEl.firstChild);
     var srcHevc = document.createElement('source');
     srcHevc.src  = base + '-hevc.mp4';
     srcHevc.type = 'video/mp4; codecs="hvc1"';
     var srcWebm = document.createElement('source');
-    srcWebm.src  = base + '.webm';
+    srcWebm.src  = base + '-hevc.webm';
     srcWebm.type = 'video/webm';
-    var srcMp4 = document.createElement('source');
-    srcMp4.src  = base + '.mp4';
-    srcMp4.type = 'video/mp4';
     videoEl.appendChild(srcHevc);
     videoEl.appendChild(srcWebm);
-    videoEl.appendChild(srcMp4);
     videoEl.load();
   }
 
